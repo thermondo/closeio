@@ -14,3 +14,6 @@ install: pip install -r requirements.txt
 
 # command to run tests, e.g. python setup.py test
 script: python setup.py test
+
+notifications:
+  slack: dcn:EgdGyu6kLrtgVoExMjfCK8V7
