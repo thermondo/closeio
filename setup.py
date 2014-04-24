@@ -18,13 +18,13 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='closeio',
+    name='faster_closeio',
     version='0.1.0',
     description='Slim API wrapper to access close.io CRM',
     long_description=readme + '\n\n' + history,
     author='Denis Cornehl',
     author_email='denis.cornehl@gmail.com',
-    url='https://github.com/syphar/closeio',
+    url='https://github.com/fasterweb/closeio',
     packages=[
         'closeio',
     ],

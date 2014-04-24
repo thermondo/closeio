@@ -13,4 +13,4 @@ deploy:
     secure: QuwWowah/nkZt/p9NPOkjugX1g2ToOuie+Dys/5qL63050mnHSTdLLM7hYvX01C1n5Rmu9sOMSL7FV7QZLhCZZOhxwHZ39RZ1GuFpoiwYOgUtAkNhB0nf9a/Bj3k8K63bI3nmcdrKp3dHadH3MSiERUjEOzVmF9apZA985IiDr0=
   on:
     tags: true
-    repo: syphar/closeio
+    repo: fasterweb/closeio
