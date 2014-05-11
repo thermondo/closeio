@@ -194,6 +194,12 @@ class CloseIO(object):
         kwargs.setdefault('status', 'draft')
         self._api.activity.email.post(kwargs)
 
+    def get_activity_email(self, lead_id):
+        return paginate(
+            self._api.activity.email.get,
+            lead_id=lead_id,
+        )
+
     def get_leads(self, query=None, fields=None):
         args = {}
         if query:
@@ -214,7 +220,10 @@ class CloseIO(object):
 
     def get_organization_users(self, organization_id=None):
         if not organization_id:
-            organization_id = self._api.me.get()['organization_id']
+            me = self._api.me.get()
+            for mem in me['memberships']:
+                organization_id = mem['organization_id']
+                break
 
         users = []
 
