@@ -48,6 +48,9 @@ class CloseIO(object):
     def get_lead(self, lead_id):
         return self._api.lead(lead_id).get()
 
+    def delete_lead(self, lead_id):
+        return self._api.lead(lead_id).delete()
+
     def get_email_templates(self):
         return paginate(
             self._api.email_template.get
