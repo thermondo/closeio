@@ -212,6 +212,27 @@ class CloseIO(object):
     def get_organization(self, organization_id):
         return self._api.organization(organization_id).get()
 
+    def get_organization_users(self, organization_id=None):
+        if not organization_id:
+            organization_id = self._api.me.get()['organization_id']
+
+        users = []
+
+        org = self._api.organization(organization_id).get()
+        for membership in org['memberships']:
+            uid = membership['user_id']
+            user = self._api.user(uid).get()
+
+            user.update({
+                key[5:]: value
+                for key, value in membership.iteritems()
+                if key.startswith('user_')
+            })
+
+            users.append(user)
+
+        return users
+
     def get_organization_user(self, organization_id, user_id):
         user = self._api.user(user_id).get()
 
