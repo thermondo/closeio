@@ -160,6 +160,9 @@ class CloseIO(object):
             "is_complete": is_complete
         })
 
+    def update_task(self, task_id, fields):
+        return self._api.task(task_id).put(fields)
+
     def get_tasks(self, lead_id=None, assigned_to=None, is_complete=None):
         args = {}
 
