@@ -35,30 +35,30 @@ class CloseIO(object):
             session=_session
         )
 
-    def __getattribute__(self, item):
-        value = super(CloseIO, self).__getattribute__(item)
-        if callable(value):
-            return parse_response(
-                handle_errors(value)
-            )
-
-        else:
-            return value
-
+    @parse_response
+    @handle_errors
     def get_lead(self, lead_id):
         return self._api.lead(lead_id).get()
 
+    @parse_response
+    @handle_errors
     def delete_lead(self, lead_id):
         return self._api.lead(lead_id).delete()
 
+    @parse_response
+    @handle_errors
     def get_email_templates(self):
         return paginate(
             self._api.email_template.get
         )
 
+    @parse_response
+    @handle_errors
     def get_email_template(self, template_id):
         return self._api.email_template(template_id).get()
 
+    @parse_response
+    @handle_errors
     def find_email_template(self, name):
         for template in self.get_email_templates():
             if template.name == name:
@@ -67,9 +67,13 @@ class CloseIO(object):
         raise CloseIOError(
             "EMail template with nane \"{}\" could not be found!".format(name))
 
+    @parse_response
+    @handle_errors
     def get_opportunity_statuss(self):
         return paginate(self._api.status.opportunity.get)
 
+    @parse_response
+    @handle_errors
     def find_opportunity_status(self, label):
         for status in self.get_opportunity_statuss():
             if status.label == label:
@@ -79,6 +83,8 @@ class CloseIO(object):
             "Opportunity-Status with label \"{}\" "
             "could not be found!".format(label))
 
+    @parse_response
+    @handle_errors
     def find_opportunity_status_in_organization(self, organization_id, label):
         org = self.get_organization(organization_id)
 
@@ -90,9 +96,13 @@ class CloseIO(object):
             "Opportunity-Status with label \"{}\" "
             "could not be found!".format(label))
 
+    @parse_response
+    @handle_errors
     def get_lead_statuss(self):
         return paginate(self._api.status.lead.get)
 
+    @parse_response
+    @handle_errors
     def find_lead_status(self, label):
         for status in self.get_lead_statuss():
             if status.label == label:
@@ -101,6 +111,8 @@ class CloseIO(object):
         raise CloseIOError(
             "Lead-Status with label \"" + label + "\" could not be found!")
 
+    @parse_response
+    @handle_errors
     def find_user(self, full_name):
         me = self._api.me.get()
         for membership in me['memberships']:
@@ -115,6 +127,8 @@ class CloseIO(object):
         raise CloseIOError(
             "User with full-name \"" + full_name + "\" could not be found!")
 
+    @parse_response
+    @handle_errors
     def find_user_id(self, email):
         ids = set()
         email = email.strip().lower()
@@ -140,18 +154,28 @@ class CloseIO(object):
         else:
             return ids.pop()
 
+    @parse_response
+    @handle_errors
     def update_lead(self, lead_id, fields):
         return self._api.lead(lead_id).put(fields)
 
+    @parse_response
+    @handle_errors
     def create_lead(self, fields):
         return self._api.lead.post(fields)
 
+    @parse_response
+    @handle_errors
     def create_opportunity(self, fields):
         return self._api.opportunity.post(fields)
 
+    @parse_response
+    @handle_errors
     def update_opportunity(self, opportunity_id, fields):
         return self._api.opportunity(opportunity_id).put(fields)
 
+    @parse_response
+    @handle_errors
     def create_task(self, lead_id, assigned_to, text, due_date=None,
                     is_complete=False):
 
@@ -163,9 +187,13 @@ class CloseIO(object):
             "is_complete": is_complete
         })
 
+    @parse_response
+    @handle_errors
     def update_task(self, task_id, fields):
         return self._api.task(task_id).put(fields)
 
+    @parse_response
+    @handle_errors
     def get_tasks(self, lead_id=None, assigned_to=None, is_complete=None):
         args = {}
 
@@ -184,22 +212,30 @@ class CloseIO(object):
             **args
         )
 
+    @parse_response
+    @handle_errors
     def create_activity_note(self, lead_id, note):
         return self._api.activity.note.post({
             'lead_id': lead_id,
             'note': note,
         })
 
+    @parse_response
+    @handle_errors
     def create_activity_email(self, **kwargs):
         kwargs.setdefault('status', 'draft')
         self._api.activity.email.post(kwargs)
 
+    @parse_response
+    @handle_errors
     def get_activity_email(self, lead_id):
         return paginate(
             self._api.activity.email.get,
             lead_id=lead_id,
         )
 
+    @parse_response
+    @handle_errors
     def get_leads(self, query=None, fields=None):
         args = {}
         if query:
@@ -212,12 +248,18 @@ class CloseIO(object):
             self._api.lead.get,
             **args)
 
+    @parse_response
+    @handle_errors
     def get_user(self, user_id):
         return self._api.user(user_id).get()
 
+    @parse_response
+    @handle_errors
     def get_organization(self, organization_id):
         return self._api.organization(organization_id).get()
 
+    @parse_response
+    @handle_errors
     def get_organization_users(self, organization_id=None):
         if not organization_id:
             me = self._api.me.get()
@@ -242,6 +284,8 @@ class CloseIO(object):
 
         return users
 
+    @parse_response
+    @handle_errors
     def get_organization_user(self, organization_id, user_id):
         user = self._api.user(user_id).get()
 
@@ -262,6 +306,8 @@ class CloseIO(object):
 
         return user
 
+    @parse_response
+    @handle_errors
     def get_lead_display_name_by_id(self, lead_id):
         lead = self.get_lead(lead_id)
         if 'display_name' in lead:
@@ -269,6 +315,8 @@ class CloseIO(object):
         else:
             return None
 
+    @parse_response
+    @handle_errors
     def get_lead_display_name(self, query):
         possible_leads = list(self.get_leads(
             query=query
