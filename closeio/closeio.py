@@ -10,7 +10,7 @@ import slumber
 
 from closeio.exceptions import CloseIOError
 from closeio.utils import DummyCookieJar, paginate, handle_errors, \
-    parse_response
+    parse_response, convert
 
 
 logger = logging.getLogger(__name__)
@@ -157,21 +157,25 @@ class CloseIO(object):
     @parse_response
     @handle_errors
     def update_lead(self, lead_id, fields):
+        fields = convert(fields)
         return self._api.lead(lead_id).put(fields)
 
     @parse_response
     @handle_errors
     def create_lead(self, fields):
+        fields = convert(fields)
         return self._api.lead.post(fields)
 
     @parse_response
     @handle_errors
     def create_opportunity(self, fields):
+        fields = convert(fields)
         return self._api.opportunity.post(fields)
 
     @parse_response
     @handle_errors
     def update_opportunity(self, opportunity_id, fields):
+        fields = convert(fields)
         return self._api.opportunity(opportunity_id).put(fields)
 
     @parse_response
@@ -190,6 +194,7 @@ class CloseIO(object):
     @parse_response
     @handle_errors
     def update_task(self, task_id, fields):
+        fields = convert(fields)
         return self._api.task(task_id).put(fields)
 
     @parse_response
