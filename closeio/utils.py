@@ -87,6 +87,8 @@ def parse(value):
 
         if parsed.date().isoformat() == value:
             return parsed.date()
+        if parsed.time().isoformat() == value:
+            return parsed.time()
 
     except (TypeError, AttributeError, ValueError):
         pass
