@@ -13,8 +13,7 @@ import unittest
 import datetime
 import types
 
-from closeio import closeio
-from closeio.utils import parse
+from closeio.utils import parse, convert
 from dateutil.tz import tzutc
 
 LEAD = {
@@ -117,8 +116,11 @@ class TestCloseio(unittest.TestCase):
         self.assertEqual(list(p_gen), list(gen()))
         self.assertIsInstance(p_gen, types.GeneratorType)
 
-    def test_compression(self):
-        pass
+    def test_convert_full(self):
+        assert LEAD == convert(parse(LEAD))
+
+    def test_none(self):
+        assert None == convert(None)
 
 
 if __name__ == '__main__':

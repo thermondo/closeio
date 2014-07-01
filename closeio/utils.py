@@ -5,6 +5,7 @@ import contextlib
 from functools import wraps
 import json
 import types
+from datetime import date, time, datetime
 
 import dateutil.parser
 
@@ -92,6 +93,30 @@ def parse(value):
 
     except (TypeError, AttributeError, ValueError):
         pass
+
+    return value
+
+
+def convert(value):
+    try:
+        return {
+            key: convert(value)
+            for key, value in value.items()
+        }
+    except AttributeError:
+        pass
+
+    if not isinstance(value, basestring):
+        try:
+            return [
+                convert(item)
+                for item in value
+            ]
+        except TypeError:
+            pass
+
+    if isinstance(value, (datetime, date, time)):
+        return value.isoformat()
 
     return value
 
