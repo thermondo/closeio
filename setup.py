@@ -27,6 +27,7 @@ setup(
     url='https://github.com/fasterweb/closeio',
     packages=[
         'closeio',
+        'closeio.models',
     ],
     package_dir={'closeio': 'closeio'},
     include_package_data=True,
