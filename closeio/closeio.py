@@ -340,3 +340,25 @@ class CloseIO(object):
             return display_name
 
         return ""
+
+    @parse_response
+    @handle_errors
+    def custom_field_values(self, fieldname):
+        leads = self.get_leads(
+            query='custom.{}:*'.format(fieldname),
+            fields=['custom']
+        )
+
+        return {
+            lead['custom'][fieldname]
+            for lead in leads
+        }
+
+    @parse_response
+    @handle_errors
+    def user_exists(self, email):
+        try:
+            self.find_user_id(email)
+            return True
+        except:
+            return False
