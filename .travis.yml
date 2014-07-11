@@ -2,7 +2,12 @@ language: python
 python:
 - '2.7'
 install: pip install -r requirements.txt
-script: python setup.py test
+script:
+- python setup.py test
+- cd tests/testapp
+- python manage.py test
+env:
+- secure: "PUiKFOIG9ZOXASSPR5QNs6ojQGpWxgoNlPaJ4p5gbLn+jtMoQ3dk2CBqz8dbEFpIQJ6EyobUUtgg8fpRmVqxfOriwk5SK5pfxxmF8TUWIOktlFGulH4fE5APZ8/VgZ6R+eP4PVUMTQpiKAa1ijH0KPGUiEwe2lXeHrcZz8/dtJY="
 notifications:
   slack:
     secure: GV9IPLNQcbLx4raoZvZFPBJLhWarinxqmqku+/OSLMY2rWUCYkBA2bPlb5vHCXOek+fJPxMfUVW9Bm+J2HVUlwzQxLPwqZ6Nd71KVmue9ot/6GUrAIi813JdQIlc5R19OSJAtvH7OqorHwQeptAz2s4KmlBIJTHmeiR04mBuhlE=

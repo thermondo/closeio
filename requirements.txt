@@ -4,3 +4,4 @@ six==1.6.1
 slumber==0.6.0
 wheel==0.22.0
 wsgiref==0.1.2
+django>=1.4
