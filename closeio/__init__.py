@@ -6,5 +6,4 @@ __email__ = 'denis.cornehl@gmail.com'
 __version__ = '0.1.5'
 
 
-from closeio import CloseIO
-from closeio import CloseIOError
+from closeio import CloseIO, CloseIOError  # noqa

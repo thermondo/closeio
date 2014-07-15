@@ -1,16 +1,10 @@
 language: python
+
 python:
 - '2.7'
-install: pip install -r requirements.txt
-script: python setup.py test
-notifications:
-  slack:
-    secure: GV9IPLNQcbLx4raoZvZFPBJLhWarinxqmqku+/OSLMY2rWUCYkBA2bPlb5vHCXOek+fJPxMfUVW9Bm+J2HVUlwzQxLPwqZ6Nd71KVmue9ot/6GUrAIi813JdQIlc5R19OSJAtvH7OqorHwQeptAz2s4KmlBIJTHmeiR04mBuhlE=
-deploy:
-  provider: pypi
-  user: syphar
-  password:
-    secure: QuwWowah/nkZt/p9NPOkjugX1g2ToOuie+Dys/5qL63050mnHSTdLLM7hYvX01C1n5Rmu9sOMSL7FV7QZLhCZZOhxwHZ39RZ1GuFpoiwYOgUtAkNhB0nf9a/Bj3k8K63bI3nmcdrKp3dHadH3MSiERUjEOzVmF9apZA985IiDr0=
-  on:
-    tags: true
-    repo: fasterweb/closeio
+
+install: 
+- pip install tox
+
+script: 
+- tox

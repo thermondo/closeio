@@ -47,5 +47,4 @@ setup(
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.7',
     ],
-    test_suite='tests',
 )
