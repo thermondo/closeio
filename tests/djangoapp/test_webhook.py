@@ -4,8 +4,14 @@ from functools import partial
 
 import pytest
 from django.core.urlresolvers import reverse
+from django.test.client import Client
 
 from closeio.contrib.django import signals, views
+
+
+@pytest.fixture
+def csrf_client(client):
+    return Client(enforce_csrf_checks=True)
 
 
 @pytest.fixture
@@ -42,55 +48,59 @@ def closeio_signals():
     return data
 
 
-def test_no_data(client):
+def test_no_data(csrf_client):
     url = reverse('closeio_webhook')
 
-    response = client.post(url)
+    response = csrf_client.post(url)
     assert response.status_code == 400
 
 
-def test_invalid_json(client):
+def test_invalid_json(csrf_client):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data="asdf",
-                           content_type="application/json")
+    response = csrf_client.post(
+        url,
+        data="asdf",
+        content_type="application/json")
     assert response.status_code == 400
 
 
-def test_formencode(client):
+def test_formencode(csrf_client):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=dict(
-                               event=1,
-                               model=2,
-                               data={}
-                           ))
-
-    assert response.status_code == 400
-
-
-def test_wrong_json(client):
-    url = reverse('closeio_webhook')
-
-    response = client.post(url,
-                           data=json.dumps(dict()),
-                           content_type="application/json")
+    response = csrf_client.post(
+        url,
+        data=dict(
+            event=1,
+            model=2,
+            data={}
+        ))
 
     assert response.status_code == 400
 
 
-def test_ok_unknown(client, closeio_signals):
+def test_wrong_json(csrf_client):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='testevent',
-                               model='testmodel',
-                               data=dict(data=1),
-                           )),
-                           content_type="application/json")
+    response = csrf_client.post(
+        url,
+        data=json.dumps(dict()),
+        content_type="application/json")
+
+    assert response.status_code == 400
+
+
+def test_ok_unknown(csrf_client, closeio_signals):
+    url = reverse('closeio_webhook')
+
+    response = csrf_client.post(
+        url,
+        data=json.dumps(dict(
+            event='testevent',
+            model='testmodel',
+            data=dict(data=1),
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 
@@ -105,16 +115,17 @@ def test_ok_unknown(client, closeio_signals):
     ]
 
 
-def test_ok_create(client, closeio_signals):
+def test_ok_create(csrf_client, closeio_signals):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='create',
-                               model='testmodel',
-                               data=dict(data=1),
-                           )),
-                           content_type="application/json")
+    response = csrf_client.post(
+        url,
+        data=json.dumps(dict(
+            event='create',
+            model='testmodel',
+            data=dict(data=1),
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 
@@ -135,19 +146,20 @@ def test_ok_create(client, closeio_signals):
     ]
 
 
-def test_ok_lead_create(client, closeio_signals):
+def test_ok_lead_create(csrf_client, closeio_signals):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='create',
-                               model='lead',
-                               data=dict(
-                                   data=1,
-                                   date_='2014-01-01',
-                               ),
-                           )),
-                           content_type="application/json")
+    response = csrf_client.post(
+        url,
+        data=json.dumps(dict(
+            event='create',
+            model='lead',
+            data=dict(
+                data=1,
+                date_='2014-01-01',
+            ),
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 
@@ -182,16 +194,17 @@ def test_ok_lead_create(client, closeio_signals):
     ]
 
 
-def test_ok_update(client, closeio_signals):
+def test_ok_update(csrf_client, closeio_signals):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='update',
-                               model='testmodel',
-                               data=dict(data=1),
-                           )),
-                           content_type="application/json")
+    response = csrf_client.post(
+        url,
+        data=json.dumps(dict(
+            event='update',
+            model='testmodel',
+            data=dict(data=1),
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 

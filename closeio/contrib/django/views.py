@@ -6,7 +6,9 @@ import json
 import logging
 
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.utils.decorators import method_decorator
 from django.views.generic import View
+from django.views.decorators.csrf import csrf_exempt
 
 from closeio import utils
 
@@ -17,6 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 class CloseIOWebHook(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(CloseIOWebHook, self).dispatch(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         try:
             query = json.loads(request.body)
