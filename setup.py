@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='faster_closeio',
-    version='0.1.6',
+    version='0.1.7',
     description='Slim API wrapper to access close.io CRM',
     long_description=readme + '\n\n' + history,
     author='Denis Cornehl',
@@ -27,6 +27,7 @@ setup(
     url='https://github.com/fasterweb/closeio',
     packages=[
         'closeio',
+        'closeio.contrib',
         'closeio.contrib.django',
     ],
     package_dir={'closeio': 'closeio'},
