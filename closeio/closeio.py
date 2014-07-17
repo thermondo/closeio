@@ -219,6 +219,18 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def create_lead_status(self, label):
+        return self._api.status.lead.post({
+            'label': label,
+        })
+
+    @parse_response
+    @handle_errors
+    def delete_lead_status(self, status_id):
+        return self._api.status.lead(status_id).delete()
+
+    @parse_response
+    @handle_errors
     def create_activity_note(self, lead_id, note):
         return self._api.activity.note.post({
             'lead_id': lead_id,
