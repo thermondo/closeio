@@ -69,7 +69,7 @@ class CloseIOStub(object):
 
         leads[data['id']] = data
 
-        return data
+        return Item(data)
 
     def get_lead(self, lead_id):
         leads = self._data('leads', {})
@@ -77,4 +77,22 @@ class CloseIOStub(object):
         if lead_id not in leads:
             raise CloseIOError()
 
-        return leads[lead_id]
+        return Item(leads[lead_id])
+
+    def update_lead(self, lead_id, fields):
+        leads = self._data('leads', {})
+
+        if lead_id not in leads:
+            raise CloseIOError()
+
+        leads[lead_id].update(fields)
+
+        return Item(leads[lead_id])
+
+    def create_activity_note(self, lead_id, note):
+        notes = self._data('activity_notes', {})
+
+        if lead_id not in notes:
+            notes[lead_id] = []
+
+        notes[lead_id].append(note)
