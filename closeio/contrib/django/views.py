@@ -38,34 +38,59 @@ class CloseIOWebHook(View):
             logger.exception("CloseIO webhook request could not be dispatched.")
             return HttpResponseBadRequest()
 
+        data_to_send = dict(
+            instance=data
+        )
+
+        if event == 'create':
+            signals.closeio_create.send(
+                sender=self.__class__,
+                model=model,
+                **data_to_send
+            )
+
+        elif event == 'update':
+            signals.closeio_update.send(
+                sender=self.__class__,
+                model=model,
+                **data_to_send
+            )
+
+        elif event == 'delete':
+            data_to_send = dict(
+                instance_id=data.get('id', '')
+            )
+            signals.closeio_delete.send(
+                sender=self.__class__,
+                model=model,
+                **data_to_send
+            )
+
+        elif event == 'merge':
+            data_to_send = dict(
+                source_id=data.get('source_id', ''),
+                destination_id=data.get('destination_id', ''),
+            )
+            signals.closeio_merge.send(
+                sender=self.__class__,
+                model=model,
+                **data_to_send
+            )
+
         expl_signal_name = '%s_%s' % (model, event)
 
         if hasattr(signals, expl_signal_name):
             signal = getattr(signals, expl_signal_name)
             signal.send(
                 sender=self.__class__,
-                instance=data,
-            )
-
-        if event == 'create':
-            signals.closeio_create.send(
-                sender=self.__class__,
-                instance=data,
-                model=model,
-            )
-
-        elif event == 'update':
-            signals.closeio_update.send(
-                sender=self.__class__,
-                instance=data,
-                model=model,
+                **data_to_send
             )
 
         signals.closeio_event.send(
             sender=self.__class__,
-            instance=data,
             model=model,
             event=event,
+            **data_to_send
         )
 
         return HttpResponse()
