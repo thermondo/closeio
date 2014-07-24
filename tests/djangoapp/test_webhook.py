@@ -299,7 +299,7 @@ def test_ok_delete(csrf_client, closeio_signals):
         }),
         ('closeio_event', (), {
             'event': 'delete',
-            'instance_id': 321,
+            'instance': dict(id=321),
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -334,7 +334,7 @@ def test_ok_lead_delete(client, closeio_signals):
         }),
         ('closeio_event', (), {
             'event': 'delete',
-            'instance_id': 321,
+            'instance': dict(id=321),
             'model': 'lead',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -366,8 +366,7 @@ def test_ok_merge(csrf_client, closeio_signals):
         }),
         ('closeio_event', (), {
             'event': 'merge',
-            'source_id': 321,
-            'destination_id': 123,
+            'instance': dict(source_id=321, destination_id=123),
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -404,8 +403,7 @@ def test_ok_lead_merge(client, closeio_signals):
         }),
         ('closeio_event', (), {
             'event': 'merge',
-            'source_id': 321,
-            'destination_id': 123,
+            'instance': dict(source_id=321, destination_id=123),
             'model': 'lead',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,

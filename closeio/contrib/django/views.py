@@ -90,7 +90,7 @@ class CloseIOWebHook(View):
             sender=self.__class__,
             model=model,
             event=event,
-            **data_to_send
+            instance=data,
         )
 
         return HttpResponse()
