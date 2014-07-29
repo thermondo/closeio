@@ -96,3 +96,12 @@ class CloseIOStub(object):
             notes[lead_id] = []
 
         notes[lead_id].append(note)
+
+    def get_activity_note(self, lead_id):
+        notes = self._data('activity_notes', {})
+
+        if lead_id not in notes:
+            return []
+
+        else:
+            return notes[lead_id]

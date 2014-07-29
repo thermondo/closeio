@@ -253,6 +253,14 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def get_activity_note(self, lead_id):
+        return paginate(
+            self._api.activity.note.get,
+            lead_id=lead_id,
+        )
+
+    @parse_response
+    @handle_errors
     def get_leads(self, query=None, fields=None):
         args = {}
         if query:
