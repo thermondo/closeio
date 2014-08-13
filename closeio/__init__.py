@@ -3,7 +3,7 @@
 
 __author__ = 'Denis Cornehl'
 __email__ = 'denis.cornehl@gmail.com'
-__version__ = '0.1.13'
+__version__ = '0.1.14'
 
 
 from closeio import CloseIO, CloseIOError  # noqa
