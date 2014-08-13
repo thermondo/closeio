@@ -219,6 +219,22 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def create_opportunity_status(self, label, type_):
+        if type_ not in ('active', 'won', 'lost'):
+            raise CloseIOError("invalid opportunity status type {}".format(type_))
+
+        return self._api.status.opportunity.post({
+            'label': label,
+            'type': type_,
+        })
+
+    @parse_response
+    @handle_errors
+    def delete_opportunity_status(self, status_id):
+        return self._api.status.opportunity(status_id).delete()
+
+    @parse_response
+    @handle_errors
     def create_lead_status(self, label):
         return self._api.status.lead.post({
             'label': label,

@@ -15,3 +15,12 @@ def lead_status(closeio, random_string):
     yield ls
 
     # closeio.delete_lead_status(ls['id'])
+
+
+@pytest.yield_fixture
+def opportunity_status(closeio, random_string):
+    os = closeio.create_opportunity_status(random_string, 'active')
+
+    yield os
+
+    # closeio.delete_lead_status(ls['id'])
