@@ -47,6 +47,17 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def delete_email_template(self, template_id):
+        return self._api.email_template(template_id).delete()
+
+    @parse_response
+    @handle_errors
+    def create_email_template(self, fields):
+        fields = convert(fields)
+        return self._api.email_template.post(fields)
+
+    @parse_response
+    @handle_errors
     def get_email_templates(self):
         return paginate(
             self._api.email_template.get
