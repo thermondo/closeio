@@ -115,6 +115,13 @@ class CloseIOStub(object):
 
         return Item(leads[lead_id])
 
+    def get_lead_display_name_by_id(self, lead_id):
+        lead = self.get_lead(lead_id)
+        if 'display_name' in lead:
+            return lead['display_name']
+        else:
+            return None
+
     def get_leads(self, query=None, fields=None):
         leads = self._data('leads', {})
 
