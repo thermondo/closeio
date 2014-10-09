@@ -155,6 +155,16 @@ class CloseIOStub(object):
 
         del leads[lead_id]
 
+    def create_activity_email(self, lead_id, **kwargs):
+        kwargs.setdefault('status', 'draft')
+
+        emails = self._data('activity_emails', {})
+
+        if lead_id not in emails:
+            emails[lead_id] = []
+
+        emails[lead_id].append(kwargs)
+
     def create_activity_note(self, lead_id, note):
         notes = self._data('activity_notes', {})
 
@@ -203,6 +213,15 @@ class CloseIOStub(object):
         return tasks
 
     get_tasks_cached = get_tasks
+
+    def get_activity_email(self, lead_id):
+        emails = self._data('activity_emails', {})
+
+        if lead_id not in emails:
+            return []
+
+        else:
+            return emails[lead_id]
 
     def get_activity_note(self, lead_id):
         notes = self._data('activity_notes', {})
