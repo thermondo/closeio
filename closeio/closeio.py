@@ -19,10 +19,14 @@ logger = logging.getLogger(__name__)
 class CloseIO(object):
     def __init__(self, api_key, max_retries=5):
         self._api_key = api_key
+        self._api_cache = None
         self._max_retries = max_retries
 
     @property
     def _api(self):
+        if self._api_cache:
+            return self._api_cache
+
         _session = requests.Session()
         _session.cookies = DummyCookieJar()
         _session.auth = (self._api_key, "")
@@ -30,10 +34,12 @@ class CloseIO(object):
         _session.mount('http://', HTTPAdapter(max_retries=self._max_retries))
         _session.mount('https://', HTTPAdapter(max_retries=self._max_retries))
 
-        return slumber.API(
+        self._api_cache = slumber.API(
             'https://app.close.io/api/v1/',
             session=_session
         )
+
+        return self._api_cache
 
     @parse_response
     @handle_errors
