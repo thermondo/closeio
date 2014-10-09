@@ -288,6 +288,18 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def get_opportunities(self):
+        return paginate(
+            self._api.opportunity.get,
+        )
+
+    @parse_response
+    @handle_errors
+    def delete_opportunity(self, opportunity_id):
+        return self._api.opportunity(opportunity_id).delete()
+
+    @parse_response
+    @handle_errors
     def get_leads(self, query=None, fields=None):
         args = {}
         if query:
