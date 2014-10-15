@@ -216,22 +216,11 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
-    def get_tasks(self, lead_id=None, assigned_to=None, is_complete=None):
-        args = {}
-
-        if lead_id:
-            args['lead_id'] = lead_id
-
-        if assigned_to:
-            args['assigned_to'] = assigned_to
-
-        if is_complete is not None:
-            args['is_complete'] = "true" if is_complete else "false"
-
-        # convert to list, since we want to cache
+    def get_tasks(self, **kwargs):
+        kwargs = convert(kwargs)
         return paginate(
             self._api.task.get,
-            **args
+            **kwargs
         )
 
     @parse_response
