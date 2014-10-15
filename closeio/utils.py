@@ -97,7 +97,7 @@ def parse(value):
     return value
 
 
-def convert(value):
+def convert(value, key=None):
     try:
         return {
             key: convert(value)
@@ -109,7 +109,7 @@ def convert(value):
     if not isinstance(value, basestring):
         try:
             return [
-                convert(item)
+                convert(item, key)
                 for item in value
             ]
         except TypeError:
@@ -117,6 +117,9 @@ def convert(value):
 
     if isinstance(value, (datetime, date, time)):
         return value.isoformat()
+
+    if key == 'is_complete':
+        return "true" if value else "false"
 
     return value
 
