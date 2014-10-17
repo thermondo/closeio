@@ -218,6 +218,12 @@ class CloseIO(object):
     @handle_errors
     def get_tasks(self, **kwargs):
         kwargs = convert(kwargs)
+        kwargs.update({
+            k: 'true' if v else 'false'
+            for k, v in kwargs.items()
+            if isinstance(v, bool)
+        })
+
         return paginate(
             self._api.task.get,
             **kwargs

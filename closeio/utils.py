@@ -118,11 +118,6 @@ def convert(value):
     if isinstance(value, (datetime, date, time)):
         return value.isoformat()
 
-    if value is True:
-        return "true"
-    elif value is False:
-        return "false"
-
     return value
 
 
