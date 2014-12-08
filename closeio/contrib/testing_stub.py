@@ -103,17 +103,32 @@ class CloseIOStub(object):
         data['organization_id'] = 'xx'
         data['date_created'] = datetime.utcnow()
 
-        leads[data['id']] = data
+        for idx, contact in enumerate(data.get('contacts', [])):
+            if not contact.get('id'):
+                data['contacts'][idx]['id'] = '{}/{}'.format(
+                    data['id'],
+                    idx,
+                )
 
-        return Item(data)
+        leads[data['id']] = data
+        return self.get_lead(data['id'])
 
     def get_lead(self, lead_id):
         leads = self._data('leads', {})
+        opportunities = self._data('opportunities', {})
 
         if lead_id not in leads:
             raise CloseIOError()
 
-        return Item(leads[lead_id])
+        lead = Item(leads[lead_id])
+
+        lead['opportunities'] = [
+            opportunity
+            for op_id, opportunity in opportunities.items()
+            if opportunity.get('lead_id', None) == lead_id
+        ]
+
+        return lead
 
     def get_lead_display_name_by_id(self, lead_id):
         lead = self.get_lead(lead_id)
@@ -145,7 +160,7 @@ class CloseIOStub(object):
 
         leads[lead_id].update(fields)
 
-        return Item(leads[lead_id])
+        return self.get_lead(lead_id)
 
     def delete_lead(self, lead_id):
         leads = self._data('leads', {})
@@ -302,3 +317,35 @@ class CloseIOStub(object):
             return users.index(email)
         else:
             raise CloseIOError()
+
+    def create_opportunity(self, data):
+        opportunities = self._data('opportunities', {})
+
+        data = copy.deepcopy(data)
+        if not data.get('id', ''):
+            data['id'] = str(len(opportunities) + 1)
+
+        data['organization_id'] = 'xx'
+        data['date_created'] = datetime.utcnow()
+
+        opportunities[data['id']] = data
+
+        return Item(data)
+
+    def update_opportunity(self, opportunity_id, fields):
+        opportunities = self._data('opportunities', {})
+
+        if opportunity_id not in opportunities:
+            raise CloseIOError()
+
+        opportunities[opportunity_id].update(fields)
+
+        return Item(opportunities[opportunity_id])
+
+    def delete_opportunity(self, opportunity_id):
+        opportunities = self._data('opportunities', {})
+
+        if opportunity_id not in opportunities:
+            raise CloseIOError()
+
+        del opportunities[opportunity_id]
