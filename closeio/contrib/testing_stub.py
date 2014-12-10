@@ -38,8 +38,9 @@ class CloseIOStub(object):
     def find_opportunity_status(self, label):
         opportunity_status = self._data('opportunity_status', [])
 
-        for st in opportunity_status:
+        for idx, st in enumerate(opportunity_status):
             if st['label'] == label:
+                st['id'] = str(idx)
                 return Item(st)
 
         raise CloseIOError()
