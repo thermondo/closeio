@@ -1,17 +1,18 @@
 # coding=utf-8
-from __future__ import (absolute_import, unicode_literals, division,
-                        print_function)
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals
+)
 
 import logging
 
 import requests
-from requests.adapters import HTTPAdapter
 import slumber
+from requests.adapters import HTTPAdapter
 
 from closeio.exceptions import CloseIOError
-from closeio.utils import DummyCookieJar, paginate, handle_errors, \
-    parse_response, convert
-
+from closeio.utils import (
+    DummyCookieJar, convert, handle_errors, paginate, parse_response
+)
 
 logger = logging.getLogger(__name__)
 

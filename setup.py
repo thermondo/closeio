@@ -4,7 +4,6 @@
 import os
 import sys
 
-
 try:
     from setuptools import setup
 except ImportError:
