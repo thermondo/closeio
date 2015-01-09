@@ -295,6 +295,13 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def get_activities(self):
+        return paginate(
+            self._api.activity.get,
+        )
+
+    @parse_response
+    @handle_errors
     def get_opportunities(self):
         return paginate(
             self._api.opportunity.get,
