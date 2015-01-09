@@ -48,6 +48,11 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def get_contact(self, contact_id):
+        return self._api.contact(contact_id).get()
+
+    @parse_response
+    @handle_errors
     def delete_lead(self, lead_id):
         return self._api.lead(lead_id).delete()
 
