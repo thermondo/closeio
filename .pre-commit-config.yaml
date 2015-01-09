@@ -1,0 +1,16 @@
+-   repo: git@github.com:pre-commit/pre-commit-hooks
+    sha: e0a6e66528c8335599408cbefe7ebf9e7e15ccb3
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: debug-statements
+    -   id: flake8
+        args: [--max-line-length=99]
+    -   id: check-added-large-files
+    -   id: requirements-txt-fixer
+        args: [requirements.txt requirements_test.txt]
+- repo: git://github.com/FalconSocial/pre-commit-python-sorter
+  sha: 8e5cbbc530d770a395de0514befa428198ffb053
+  hooks:
+  - id: python-import-sorter
+    args: ['--silent-overwrite']
