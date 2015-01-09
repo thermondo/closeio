@@ -1,14 +1,15 @@
 # coding=utf-8
-from __future__ import (absolute_import, unicode_literals, division,
-                        print_function)
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals
+)
+
 import contextlib
-from functools import wraps
 import json
 import types
-from datetime import date, time, datetime
+from datetime import date, datetime, time
+from functools import wraps
 
 import dateutil.parser
-
 from slumber.exceptions import SlumberBaseException
 
 from closeio.exceptions import CloseIOError
@@ -91,7 +92,7 @@ def parse(value):
         if parsed.time().isoformat() == value:
             return parsed.time()
 
-    except (TypeError, AttributeError, ValueError):
+    except (TypeError, AttributeError, ValueError, OverflowError):
         pass
 
     return value
