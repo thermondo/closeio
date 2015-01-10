@@ -295,10 +295,14 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
-    def get_activities(self):
+    def get_activities(self, **kwargs):
+        fields = kwargs.pop('fields', None)
+        if fields:
+            kwargs['_fields'] = ','.join(fields)
+
         return paginate(
             self._api.activity.get,
-        )
+            **kwargs)
 
     @parse_response
     @handle_errors
