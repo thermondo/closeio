@@ -36,10 +36,19 @@ def convert_errors():
         else:
             error_message = unicode(e)
 
-        raise CloseIOError(error_message, e)
+        if hasattr(e, 'response'):
+            request = e.response.request
+            request_data = 'url: {}\nbody: {}'.format(
+                request.url,
+                request.body,
+            )
+        else:
+            request_data = ''
+
+        raise CloseIOError(error_message, e, request_data)
 
     except Exception as e:
-        raise CloseIOError(unicode(e), e)
+        raise CloseIOError(unicode(e), e, '')
 
 
 def handle_errors(func):
