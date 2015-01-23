@@ -439,3 +439,30 @@ class CloseIO(object):
             return True
         except:
             return False
+
+    @parse_response
+    @handle_errors
+    def create_lead_export(self, query='*', format='json', fields=(),
+                           include_activities=False, include_smart_fields=False):
+
+        args = dict(
+            format=format,
+            type='leads',
+            query=query,
+        )
+
+        if include_activities:
+            args['include_activities'] = include_activities
+
+        if include_smart_fields:
+            args['include_smart_fields'] = include_smart_fields
+
+        if fields:
+            args['fields'] = list(fields)
+
+        return self._api.export.lead.post(args)
+
+    @parse_response
+    @handle_errors
+    def get_export(self, id):
+        return self._api.export(id).get()
