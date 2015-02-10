@@ -5,7 +5,7 @@ import os
 import sys
 
 try:
-    from setuptools import setup
+    from setuptools import setup, Command
 except ImportError:
     from distutils.core import setup
 
@@ -15,6 +15,23 @@ if sys.argv[-1] == 'publish':
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+
+
+class PyTest(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys
+        import subprocess
+
+        errno = subprocess.call([sys.executable, 'runtests.py'])
+        raise SystemExit(errno)
 
 setup(
     name='faster_closeio',
@@ -46,13 +63,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 2.3',
-        'Programming Language :: Python :: 2.4',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
     entry_points={'pytest11': ['closeio = closeio.contrib.pytest_plugin']},
+    cmdclass={'test': PyTest},
 )

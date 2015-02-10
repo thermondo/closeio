@@ -5,6 +5,9 @@ closeio
 .. image:: https://travis-ci.org/Thermondo/closeio.png?branch=master
     :target: https://travis-ci.org/Thermondo/closeio
 
+.. image:: https://coveralls.io/repos/Thermondo/closeio/badge.png?branch=master
+    :target: https://coveralls.io/r/Thermondo/closeio
+
 .. image:: https://pypip.in/v/faster_closeio/badge.png
     :target: https://crate.io/packages/faster_closeio
 
