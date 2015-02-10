@@ -44,6 +44,11 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def me(self):
+        return self._api.me.get()
+
+    @parse_response
+    @handle_errors
     def get_lead(self, lead_id):
         return self._api.lead(lead_id).get()
 

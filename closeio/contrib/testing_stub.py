@@ -253,7 +253,15 @@ class CloseIOStub(object):
         if lead_id not in emails:
             emails[lead_id] = []
 
-        emails[lead_id].append(kwargs)
+        email = kwargs
+
+        template_id = email.pop('template_id', None)
+        if template_id:
+            template = self.get_email_template(template_id)
+            email['subject'] = template['subject']
+            email['body_text'] = template['body']
+
+        emails[lead_id].append(email)
 
     @parse_response
     def create_activity_note(self, lead_id, note):
@@ -395,13 +403,17 @@ class CloseIOStub(object):
         del email_templates[template_id]
 
     @parse_response
-    def get_organization_users(self, organization_id):
+    def get_organization_users(self, organization_id=None):
         users = self._data('users', [])
 
         return [
             self.get_user(user_id)
             for user_id, email in enumerate(users)
         ]
+
+    @parse_response
+    def me(self):
+        return self.get_user(0)
 
     @parse_response
     def get_user(self, user_id):
@@ -412,9 +424,13 @@ class CloseIOStub(object):
         if user_id >= len(users):
             raise CloseIOError()
 
+        email = users[user_id]
+
         return Item({
             'id': str(user_id),
-            'email': users[user_id]
+            'email': email,
+            'first_name': 'first {}'.format(user_id),
+            'last_name': 'last {}'.format(user_id),
         })
 
     @parse_response
