@@ -255,7 +255,7 @@ class CloseIOStub(object):
 
         email = kwargs
 
-        template_id = email.pop('template_id', None)
+        template_id = email.get('template_id', None)
         if template_id:
             template = self.get_email_template(template_id)
             email['subject'] = template['subject']
