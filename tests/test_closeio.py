@@ -109,18 +109,17 @@ class TestCloseio(unittest.TestCase):
         self.assertEqual(parsed_items["custom"]["time_of_death"], datetime.time(1))
         self.assertEqual(parsed_items["custom"]["date_of_death"], datetime.date(1988, 11, 19))
         self.assertEqual(parsed_items["custom"]["foo"], "bar")
-        gen = lambda: (x for x in range(10))
-        p_gen = parse(gen())
+        p_gen = parse(x for x in range(10))
         is_gen = (x for x in range(10))
         self.assertIsNot(parse(is_gen), is_gen)
-        self.assertEqual(list(p_gen), list(gen()))
+        self.assertEqual(list(p_gen), [x for x in range(10)])
         self.assertIsInstance(p_gen, types.GeneratorType)
 
     def test_convert_full(self):
         assert LEAD == convert(parse(LEAD))
 
     def test_none(self):
-        assert None == convert(None)
+        assert None is convert(None)
 
 
 if __name__ == '__main__':
