@@ -7,6 +7,7 @@ import logging
 
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 
@@ -25,7 +26,7 @@ class CloseIOWebHook(View):
 
     def post(self, request, *args, **kwargs):
         try:
-            query = json.loads(request.body)
+            query = json.loads(force_text(request.body))
         except (ValueError, TypeError):
             logger.exception("CloseIO webhook request could not be parsed.")
             return HttpResponseBadRequest()

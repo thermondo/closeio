@@ -1,17 +1,29 @@
 language: python
 sudo: false
+cache:
+  - pip
 python:
-- '2.7'
-- pypy
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "pypy"
+  - "pypy3"
 env:
   global:
-    secure: OS5k0TUmxCV0FsKo/9T/UGDCd1Vtirm7/3BXvWbcsr+8TUZ3vpTDoXoAlIrryHLfjaAUyG4nrhzLeGe+VYAdcBr2smm2xHUj46MaKSKIaGKtmXjep8s4dceePKodzLL8dtgyAXEJSSt+FVeTCbmR5lMBXBSVP8xYHb6W1n0Z41g=
+    - secure: OS5k0TUmxCV0FsKo/9T/UGDCd1Vtirm7/3BXvWbcsr+8TUZ3vpTDoXoAlIrryHLfjaAUyG4nrhzLeGe+VYAdcBr2smm2xHUj46MaKSKIaGKtmXjep8s4dceePKodzLL8dtgyAXEJSSt+FVeTCbmR5lMBXBSVP8xYHb6W1n0Z41g=
   matrix:
-  - DJANGO=1.6.10
-  - DJANGO=1.7.4
+    - DJANGO="Django<1.8,>=1.7"
+    - DJANGO="Django<1.9,>=1.8"
+    - DJANGO="Django<1.9,>=1.8"
+    - DJANGO="-e git+https://github.com/django/django.git#egg=Django"
+matrix:
+  allow_failures:
+    - python: "3.5"
+    - env: DJANGO="-e git+https://github.com/django/django.git#egg=Django"
 install:
+- pip install -U pip
 - pip install -r requirements_dev.txt
-- pip install Django==$DJANGO
+- pip install $DJANGO
 - pip install coveralls
 script:
   coverage run --source=closeio runtests.py
