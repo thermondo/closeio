@@ -1,10 +1,19 @@
 language: python
-
+sudo: false
 python:
 - '2.7'
-
-install: 
-- pip install tox
-
-script: 
-- tox
+- pypy
+env:
+  global:
+    secure: OS5k0TUmxCV0FsKo/9T/UGDCd1Vtirm7/3BXvWbcsr+8TUZ3vpTDoXoAlIrryHLfjaAUyG4nrhzLeGe+VYAdcBr2smm2xHUj46MaKSKIaGKtmXjep8s4dceePKodzLL8dtgyAXEJSSt+FVeTCbmR5lMBXBSVP8xYHb6W1n0Z41g=
+  matrix:
+  - DJANGO=1.6.10
+  - DJANGO=1.7.4
+install:
+- pip install -r requirements_dev.txt
+- pip install Django==$DJANGO
+- pip install coveralls
+script:
+  coverage run --source=closeio runtests.py
+after_success:
+  coveralls

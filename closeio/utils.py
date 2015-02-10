@@ -5,6 +5,7 @@ from __future__ import (
 
 import contextlib
 import json
+from six import text_type, string_types
 import types
 from datetime import date, datetime, time
 from functools import wraps
@@ -32,9 +33,9 @@ def convert_errors():
                 else:
                     error_message = e.content
             except ValueError:
-                error_message = unicode(e.content)
+                error_message = text_type(e.content)
         else:
-            error_message = unicode(e)
+            error_message = text_type(e)
 
         if hasattr(e, 'response'):
             request = e.response.request
@@ -48,7 +49,7 @@ def convert_errors():
         raise CloseIOError(error_message, e, request_data)
 
     except Exception as e:
-        raise CloseIOError(unicode(e), e, '')
+        raise CloseIOError(text_type(e), e, '')
 
 
 def handle_errors(func):
@@ -81,7 +82,7 @@ def parse(value):
             for item in value
         )
 
-    if not isinstance(value, basestring):
+    if not isinstance(value, string_types):
         try:
             return [
                 parse(item)
@@ -116,7 +117,7 @@ def convert(value):
     except AttributeError:
         pass
 
-    if not isinstance(value, basestring):
+    if not isinstance(value, string_types):
         try:
             return [
                 convert(item)

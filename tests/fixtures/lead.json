@@ -1,0 +1,38 @@
+{
+  "name": "Bluth Company",
+  "url": "http://thebluthcompany.tumblr.com/",
+  "description": "Best. Show. Ever.",
+  "contacts": [
+    {
+      "name": "Gob",
+      "title": "Sr. Vice President",
+      "emails": [
+        {
+          "type": "office",
+          "email": "gob@example.com"
+        }
+      ],
+      "phones": [
+        {
+          "type": "office",
+          "phone": "8004445555"
+        }
+      ]
+    }
+  ],
+  "custom": {
+    "Source": "Website contact form",
+    "Transportation": "Segway"
+  },
+  "addresses": [
+    {
+      "label": "business",
+      "address_1": "747 Howard St",
+      "address_2": "Room 3",
+      "city": "San Francisco",
+      "state": "CA",
+      "zipcode": "94103",
+      "country": "US"
+    }
+  ]
+}
