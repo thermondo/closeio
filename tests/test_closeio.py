@@ -105,7 +105,7 @@ class TestCloseio(unittest.TestCase):
         """
         parsed_items = parse(LEAD)
         self.assertEqual(parsed_items["date_updated"],
-                         datetime.datetime(2013, 02, 06, 20, 53, 01, 977000, tzinfo=tzutc()))
+                         datetime.datetime(2013, 2, 6, 20, 53, 1, 977000, tzinfo=tzutc()))
         self.assertEqual(parsed_items["custom"]["time_of_death"], datetime.time(1))
         self.assertEqual(parsed_items["custom"]["date_of_death"], datetime.date(1988, 11, 19))
         self.assertEqual(parsed_items["custom"]["foo"], "bar")
