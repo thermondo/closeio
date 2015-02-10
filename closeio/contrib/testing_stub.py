@@ -3,7 +3,7 @@ import copy
 import itertools
 from datetime import datetime
 
-from closeio.utils import Item, CloseIOError
+from closeio.utils import Item, CloseIOError, parse_response
 
 threadlocal = threading.local()
 
@@ -35,16 +35,26 @@ class CloseIOStub(object):
 
         return storage[attr]
 
+    @parse_response
     def find_opportunity_status(self, label):
         opportunity_status = self._data('opportunity_status', [])
 
         for idx, st in enumerate(opportunity_status):
             if st['label'] == label:
-                st['id'] = str(idx)
-                return Item(st)
+                return self._get_opportunity_status(idx)
 
         raise CloseIOError()
 
+    @parse_response
+    def get_opportunity_statuss(self):
+        opportunity_status = self._data('opportunity_status', [])
+
+        return [
+            self.find_opportunity_status(os['label'])
+            for os in opportunity_status
+        ]
+
+    @parse_response
     def create_opportunity_status(self, label, type_):
         opportunity_status = self._data('opportunity_status', [])
 
@@ -62,6 +72,7 @@ class CloseIOStub(object):
 
         return self.find_opportunity_status(label)
 
+    @parse_response
     def create_lead_status(self, label):
         lead_status = self._data('lead_status', [])
 
@@ -73,6 +84,7 @@ class CloseIOStub(object):
 
             return self.find_lead_status(label)
 
+    @parse_response
     def find_lead_status(self, label):
         lead_status = self._data('lead_status', [])
 
@@ -84,6 +96,16 @@ class CloseIOStub(object):
             label=label,
         ))
 
+    @parse_response
+    def get_lead_statuss(self):
+        lead_status = self._data('lead_status', [])
+
+        return [
+            self.find_lead_status(label)
+            for label in lead_status
+        ]
+
+    @parse_response
     def delete_lead_status(self, status_id):
         lead_status = self._data('lead_status', [])
 
@@ -94,6 +116,7 @@ class CloseIOStub(object):
 
         del lead_status[status_id]
 
+    @parse_response
     def create_lead(self, data):
         leads = self._data('leads', {})
 
@@ -114,6 +137,36 @@ class CloseIOStub(object):
         leads[data['id']] = data
         return self.get_lead(data['id'])
 
+    def _get_opportunity_status(self, ops_id):
+        opportunity_status = self._data('opportunity_status', [])
+
+        try:
+            ops_id = int(ops_id)
+        except (TypeError, ValueError):
+            raise CloseIOError()
+
+        if ops_id >= len(opportunity_status):
+            raise CloseIOError()
+
+        os = opportunity_status[ops_id]
+        os['id'] = str(ops_id)
+
+        return Item(os)
+
+    def _get_opportunity(self, op_id):
+        opportunities = self._data('opportunities', {})
+
+        if op_id not in opportunities:
+            raise CloseIOError()
+
+        op = opportunities[op_id]
+        status = self._get_opportunity_status(op['status_id'])
+        op['status_label'] = status['label']
+        op['status_type'] = status['type']
+
+        return Item(op)
+
+    @parse_response
     def get_lead(self, lead_id):
         leads = self._data('leads', {})
         opportunities = self._data('opportunities', {})
@@ -124,13 +177,16 @@ class CloseIOStub(object):
         lead = Item(leads[lead_id])
 
         lead['opportunities'] = [
-            opportunity
+            self._get_opportunity(op_id)
             for op_id, opportunity in opportunities.items()
             if opportunity.get('lead_id', None) == lead_id
         ]
 
+        lead['tasks'] = self.get_tasks(lead_id=lead_id)
+
         return lead
 
+    @parse_response
     def get_lead_display_name_by_id(self, lead_id):
         lead = self.get_lead(lead_id)
         if 'display_name' in lead:
@@ -138,6 +194,7 @@ class CloseIOStub(object):
         else:
             return None
 
+    @parse_response
     def get_leads(self, query=None, fields=None):
         leads = self._data('leads', {})
 
@@ -153,6 +210,21 @@ class CloseIOStub(object):
                         yield Item(data)
                         break
 
+    @parse_response
+    def update_task(self, task_id, fields):
+        tasks = self._data('tasks', {})
+
+        for t in itertools.chain.from_iterable(tasks.values()):
+            if t['id'] == task_id:
+                task = t
+                break
+        else:
+            raise CloseIOError()
+
+        task.update(fields)
+        return self._get_task(task_id)
+
+    @parse_response
     def update_lead(self, lead_id, fields):
         leads = self._data('leads', {})
 
@@ -163,6 +235,7 @@ class CloseIOStub(object):
 
         return self.get_lead(lead_id)
 
+    @parse_response
     def delete_lead(self, lead_id):
         leads = self._data('leads', {})
 
@@ -171,6 +244,7 @@ class CloseIOStub(object):
 
         del leads[lead_id]
 
+    @parse_response
     def create_activity_email(self, lead_id, **kwargs):
         kwargs.setdefault('status', 'draft')
 
@@ -181,6 +255,7 @@ class CloseIOStub(object):
 
         emails[lead_id].append(kwargs)
 
+    @parse_response
     def create_activity_note(self, lead_id, note):
         notes = self._data('activity_notes', {})
 
@@ -189,6 +264,7 @@ class CloseIOStub(object):
 
         notes[lead_id].append(note)
 
+    @parse_response
     def create_task(self, lead_id, assigned_to, text, due_date=None,
                     is_complete=False):
         tasks = self._data('tasks', {})
@@ -196,32 +272,59 @@ class CloseIOStub(object):
         if lead_id not in tasks:
             tasks[lead_id] = []
 
-        tasks[lead_id].append({
+        task = {
             "lead_id": lead_id,
             "assigned_to": str(assigned_to),
             "text": text,
             "due_date": due_date.date().isoformat() if due_date else None,
             "is_complete": is_complete
-        })
+        }
 
+        task['id'] = '{}_{}'.format(
+            lead_id,
+            len(tasks[lead_id]) + 1
+        )
+
+        tasks[lead_id].append(task)
+
+        return task
+
+    def _get_task(self, task_id):
+        tasks = self._data('tasks', {})
+        leads = self._data('leads', {})
+
+        for task in itertools.chain.from_iterable(tasks.values()):
+            if task['id'] == task_id:
+                if 'lead_id' in task:
+                    lead_id = task.get('lead_id')
+                    lead = leads.get(lead_id, {})
+                    if lead:
+                        task['lead_name'] = lead.get('name', '')
+
+                # task['assigned_to'] = str(task['assigned_to'])
+                return task
+
+        raise CloseIOError()
+
+    @parse_response
     def get_tasks(self, lead_id=None, assigned_to=None, is_complete=None):
         tasks = self._data('tasks', {})
 
         if lead_id is not None:
-            tasks = tasks[lead_id]
+            tasks = tasks.get(lead_id, [])
         else:
             tasks = itertools.chain.from_iterable(tasks.values())
 
         if assigned_to is not None:
             tasks = [
-                t
+                self._get_task(t['id'])
                 for t in tasks
                 if t['assigned_to'] == assigned_to
             ]
 
         if is_complete is not None:
             tasks = [
-                t
+                self._get_task(t['id'])
                 for t in tasks
                 if t['is_complete'] == is_complete
             ]
@@ -230,6 +333,7 @@ class CloseIOStub(object):
 
     get_tasks_cached = get_tasks
 
+    @parse_response
     def get_activity_email(self, lead_id):
         emails = self._data('activity_emails', {})
 
@@ -239,6 +343,7 @@ class CloseIOStub(object):
         else:
             return emails[lead_id]
 
+    @parse_response
     def get_activity_note(self, lead_id):
         notes = self._data('activity_notes', {})
 
@@ -248,6 +353,7 @@ class CloseIOStub(object):
         else:
             return notes[lead_id]
 
+    @parse_response
     def get_email_templates(self):
         email_templates = self._data('email_templates', [])
 
@@ -256,6 +362,7 @@ class CloseIOStub(object):
             for id_, data in enumerate(email_templates)
         ]
 
+    @parse_response
     def get_email_template(self, template_id):
         email_templates = self._data('email_templates', [])
 
@@ -269,12 +376,14 @@ class CloseIOStub(object):
 
         return Item(data)
 
+    @parse_response
     def create_email_template(self, fields):
         email_templates = self._data('email_templates', [])
         email_templates.append(fields)
 
         return self.get_email_template(len(email_templates) - 1)
 
+    @parse_response
     def delete_email_template(self, template_id):
         email_templates = self._data('email_templates', [])
 
@@ -285,6 +394,7 @@ class CloseIOStub(object):
 
         del email_templates[template_id]
 
+    @parse_response
     def get_organization_users(self, organization_id):
         users = self._data('users', [])
 
@@ -293,6 +403,7 @@ class CloseIOStub(object):
             for user_id, email in enumerate(users)
         ]
 
+    @parse_response
     def get_user(self, user_id):
         users = self._data('users', [])
 
@@ -302,37 +413,43 @@ class CloseIOStub(object):
             raise CloseIOError()
 
         return Item({
-            'id': user_id,
+            'id': str(user_id),
             'email': users[user_id]
         })
 
+    @parse_response
     def user_exists(self, email):
         users = self._data('users', [])
 
         return email in users
 
+    @parse_response
     def find_user_id(self, email):
         users = self._data('users', [])
 
         if email in users:
-            return users.index(email)
+            return str(users.index(email))
         else:
             raise CloseIOError()
 
+    @parse_response
     def create_opportunity(self, data):
         opportunities = self._data('opportunities', {})
+        opportunity_keys = self._data('opportunity_keys', {})
 
         data = copy.deepcopy(data)
         if not data.get('id', ''):
-            data['id'] = str(len(opportunities) + 1)
+            data['id'] = str(len(opportunity_keys) + 1)
 
         data['organization_id'] = 'xx'
         data['date_created'] = datetime.utcnow()
 
         opportunities[data['id']] = data
+        opportunity_keys[data['id']] = data
 
-        return Item(data)
+        return self._get_opportunity(data['id'])
 
+    @parse_response
     def update_opportunity(self, opportunity_id, fields):
         opportunities = self._data('opportunities', {})
 
@@ -341,8 +458,9 @@ class CloseIOStub(object):
 
         opportunities[opportunity_id].update(fields)
 
-        return Item(opportunities[opportunity_id])
+        return self._get_opportunity(opportunity_id)
 
+    @parse_response
     def delete_opportunity(self, opportunity_id):
         opportunities = self._data('opportunities', {})
 
