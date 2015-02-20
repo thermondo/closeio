@@ -285,7 +285,7 @@ class CloseIOStub(object):
             "lead_id": lead_id,
             "assigned_to": binary_type(assigned_to),
             "text": text,
-            "due_date": due_date.date().isoformat() if due_date else None,
+            "due_date": due_date.isoformat() if due_date else None,
             "is_complete": is_complete
         }
 

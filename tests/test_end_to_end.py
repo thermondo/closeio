@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, print_function
+import datetime
 import json
 import time
 
@@ -96,12 +97,16 @@ class TestEndToEnd(object):
         response = client.update_lead(lead['id'], fields)
         assert fields['description'] == response['description']
 
-    def test_create_task(self, client, lead):
+    @pytest.mark.parametrize('_date', [
+        datetime.datetime.now(), datetime.date.today(), None
+    ])
+    def test_create_task(self, client, lead, _date):
         with open(os.path.join(FIXTURE_DIR, 'task.json')) as f:
             task = utils.parse(json.load(f))
             task.update({
                 'lead_id': lead['id'],
                 'assigned_to': client.me()['id'],
+                'due_date': _date
             })
             response = client.create_task(**task)
             assert all(False for k in task if k not in response), dict(response)
