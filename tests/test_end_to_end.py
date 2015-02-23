@@ -111,6 +111,7 @@ class TestEndToEnd(object):
             response = client.create_task(**task)
             assert all(False for k in task if k not in response), dict(response)
 
+    @pytest.mark.flaky(reruns=3)
     def test_update_task(self, client, task):
         fields = {
             "is_complete": True
