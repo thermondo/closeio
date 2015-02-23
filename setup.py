@@ -35,7 +35,7 @@ class PyTest(Command):
 
 setup(
     name='faster_closeio',
-    version='0.1.34',
+    version='0.1.35',
     description='Slim API wrapper to access close.io CRM',
     long_description=readme + '\n\n' + history,
     author='Denis Cornehl',

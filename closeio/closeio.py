@@ -235,6 +235,8 @@ class CloseIO(object):
             if isinstance(v, bool)
         })
 
+        kwargs.setdefault('_order_by', '-date_created')
+
         return paginate(
             self._api.task.get,
             **kwargs
