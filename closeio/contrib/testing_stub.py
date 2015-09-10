@@ -246,16 +246,13 @@ class CloseIOStub(object):
         del leads[lead_id]
 
     @parse_response
-    def create_activity_email(self, lead_id, **kwargs):
+    def create_activity_email(self, **kwargs):
         kwargs.setdefault('status', 'draft')
-
         emails = self._data('activity_emails', {})
-
+        lead_id = kwargs.get('lead_id')
+        email = kwargs
         if lead_id not in emails:
             emails[lead_id] = []
-
-        email = kwargs
-
         template_id = email.get('template_id', None)
         if template_id:
             template = self.get_email_template(template_id)
@@ -263,6 +260,17 @@ class CloseIOStub(object):
             email['body_text'] = template['body']
 
         emails[lead_id].append(email)
+
+    @parse_response
+    def create_activity_call(self, **kwargs):
+        calls = self._data('activity_calls', {})
+        call = kwargs
+        lead_id = call['lead_id']
+
+        if lead_id not in calls:
+            calls[lead_id] = []
+
+        calls[lead_id].append(call)
 
     @parse_response
     def create_activity_note(self, lead_id, note):
@@ -351,6 +359,16 @@ class CloseIOStub(object):
 
         else:
             return emails[lead_id]
+
+    @parse_response
+    def get_activity_call(self, lead_id):
+        calls = self._data('activity_calls', {})
+
+        if lead_id not in calls:
+            return []
+
+        else:
+            return calls[lead_id]
 
     @parse_response
     def get_activity_note(self, lead_id):

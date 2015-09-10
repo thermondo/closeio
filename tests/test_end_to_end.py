@@ -141,3 +141,12 @@ class TestEndToEnd(object):
         }
         response = client.update_opportunity(opportunity['id'], fields)
         assert response['confidence'] == 75, dict(response)
+
+    def test_create_activity_call(self, client, lead):
+        with open(os.path.join(FIXTURE_DIR, 'call.json')) as f:
+            call = utils.parse(json.load(f))
+            call.update({
+                'lead_id': lead['id'],
+            })
+            response = client.create_activity_call(**call)
+            assert all(False for k in call if k not in response), dict(response)

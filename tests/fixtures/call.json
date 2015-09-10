@@ -1,0 +1,11 @@
+{
+  "lead_id": "lead_fioU1Nk5LC0H0iei9XBGHW2CFZU0yeP2zZCJQP9pC4m",
+  "contact_id": "cont_bulY73zoaAwTCLdjHrKzGkzZ942OwtEelJR7kNku9RK",
+  "created_by": "user_weWpqmrZZ9sg3FHYQcUwV7tbwZRpe3sA215Ftv8OvbU",
+  "user_id": "user_weWpqmrZZ9sg3FHYQcUwV7tbwZRpe3sA215Ftv8OvbU",
+  "direction": "outbound",
+  "status": "completed",
+  "note": "call notes go here",
+  "duration": 153,
+  "phone": "+16505551234"
+}

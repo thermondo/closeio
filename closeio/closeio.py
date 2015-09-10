@@ -294,6 +294,11 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def create_activity_call(self, **kwargs):
+        return self._api.activity.call.post(kwargs)
+
+    @parse_response
+    @handle_errors
     def get_activity_call(self, lead_id):
         return paginate(
             self._api.activity.call.get,
