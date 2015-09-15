@@ -72,6 +72,10 @@ class TestEndToEnd(object):
             wait_for_index(response['lead_id'])
             yield response
 
+    @pytest.fixture
+    def export(self, client):
+        return client.create_lead_export()
+
     def test_create_lead(self, client):
         with open(os.path.join(FIXTURE_DIR, 'lead.json')) as f:
             lead = utils.parse(json.load(f))
@@ -150,3 +154,10 @@ class TestEndToEnd(object):
             })
             response = client.create_activity_call(**call)
             assert all(False for k in call if k not in response), dict(response)
+
+    def test_create_lead_export(self, client):
+        export = client.create_lead_export()
+        assert export
+
+    def test_get_export(self, client, export):
+        assert client.get_export(export['id'])
