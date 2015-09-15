@@ -503,3 +503,37 @@ class CloseIOStub(object):
             raise CloseIOError()
 
         del opportunities[opportunity_id]
+
+    @parse_response
+    def get_export(self, id):
+        exports = self._data('exports', [])
+        export_id = int(id)
+
+        export = (item for item in exports if item["id"] == export_id).next()
+
+        if not export:
+            raise CloseIOError()
+        return export
+
+    @parse_response
+    def create_lead_export(self, query='*', format='json', fields=(),
+                           include_activities=False, include_smart_fields=False):
+        exports = self._data('exports', [])
+        export = dict(
+            format=format,
+            type='leads',
+            query=query,
+        )
+
+        if include_activities:
+            export['include_activities'] = include_activities
+
+        if include_smart_fields:
+            export['include_smart_fields'] = include_smart_fields
+
+        if fields:
+            export['fields'] = list(fields)
+
+        export['id'] = len(exports) + 1
+        exports.append(export)
+        return self.get_export(export['id'])

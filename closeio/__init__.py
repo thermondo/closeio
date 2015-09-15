@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 __author__ = 'Denis Cornehl'
 __email__ = 'denis.cornehl@gmail.com'
-__version__ = '0.1.37'
+__version__ = '0.1.38'
 
 
 from .closeio import CloseIO, CloseIOError  # noqa
