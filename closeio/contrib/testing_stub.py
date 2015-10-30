@@ -4,7 +4,7 @@ import itertools
 from datetime import datetime
 
 from closeio.utils import Item, CloseIOError, parse_response
-from six import binary_type, text_type
+from six import text_type
 
 threadlocal = threading.local()
 
@@ -123,7 +123,7 @@ class CloseIOStub(object):
 
         data = copy.deepcopy(data)
         if not data.get('id', ''):
-            data['id'] = binary_type(len(leads) + 1)
+            data['id'] = text_type(len(leads) + 1)
 
         data['organization_id'] = 'xx'
         data['date_created'] = datetime.utcnow()
@@ -150,7 +150,7 @@ class CloseIOStub(object):
             raise CloseIOError()
 
         os = opportunity_status[ops_id]
-        os['id'] = binary_type(ops_id)
+        os['id'] = text_type(ops_id)
 
         return Item(os)
 
@@ -291,7 +291,7 @@ class CloseIOStub(object):
 
         task = {
             "lead_id": lead_id,
-            "assigned_to": binary_type(assigned_to),
+            "assigned_to": text_type(assigned_to),
             "text": text,
             "due_date": due_date.isoformat() if due_date else None,
             "is_complete": is_complete
@@ -399,7 +399,7 @@ class CloseIOStub(object):
             raise CloseIOError()
 
         data = copy.deepcopy(email_templates[template_id])
-        data['id'] = binary_type(template_id)
+        data['id'] = text_type(template_id)
 
         return Item(data)
 
@@ -446,7 +446,7 @@ class CloseIOStub(object):
         email = users[user_id]
 
         return Item({
-            'id': binary_type(user_id),
+            'id': text_type(user_id),
             'email': email,
             'first_name': 'first {}'.format(user_id),
             'last_name': 'last {}'.format(user_id),
@@ -463,7 +463,7 @@ class CloseIOStub(object):
         users = self._data('users', [])
 
         if email in users:
-            return binary_type(users.index(email))
+            return text_type(users.index(email))
         else:
             raise CloseIOError()
 
@@ -474,7 +474,7 @@ class CloseIOStub(object):
 
         data = copy.deepcopy(data)
         if not data.get('id', ''):
-            data['id'] = binary_type(len(opportunity_keys) + 1)
+            data['id'] = text_type(len(opportunity_keys) + 1)
 
         data['organization_id'] = 'xx'
         data['date_created'] = datetime.utcnow()
