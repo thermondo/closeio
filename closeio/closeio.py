@@ -396,7 +396,7 @@ class CloseIO(object):
             if membership['user_id'] == user_id:
                 user.update({
                     key[5:]: value
-                    for key, value in membership.iteritems()
+                    for key, value in membership.items()
                     if key.startswith('user_')
                 })
                 break
