@@ -1,9 +1,13 @@
+import django
 from django.conf import settings
 
 
 def pytest_configure():
     settings.configure(
-        INSTALLED_APPS=[],
+        INSTALLED_APPS=[
+            'django.contrib.contenttypes',
+            'django.contrib.auth',
+        ],
         ROOT_URLCONF='djangoapp.urls',
         STATIC_URL='/static/',
         LANGUAGE_CODE='en',
@@ -17,3 +21,4 @@ def pytest_configure():
             'django.middleware.clickjacking.XFrameOptionsMiddleware',
         ),
     )
+    django.setup()
