@@ -378,7 +378,7 @@ class CloseIO(object):
 
             user.update({
                 key[5:]: value
-                for key, value in membership.iteritems()
+                for key, value in membership.items()
                 if key.startswith('user_')
             })
 
