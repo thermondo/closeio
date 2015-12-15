@@ -26,12 +26,16 @@ def convert_errors():
 
     except SlumberBaseException as e:
         if hasattr(e, 'content'):
+            if isinstance(e.content, bytes):
+                content = e.content.decode('utf-8')
+            else:
+                content = e.content
             try:
-                error_info = json.loads(e.content)
+                error_info = json.loads(content)
                 if 'error' in error_info:
                     error_message = error_info['error']
                 else:
-                    error_message = e.content
+                    error_message = content
             except ValueError:
                 error_message = text_type(e.content)
         else:
