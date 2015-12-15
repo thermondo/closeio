@@ -3,6 +3,8 @@
 from __future__ import unicode_literals, print_function
 import datetime
 import json
+import random
+import string
 import time
 
 from closeio.closeio import CloseIO
@@ -20,6 +22,13 @@ class TestEndToEnd(object):
     @pytest.fixture
     def client(self):
         return CloseIO(API_KEY)
+
+    @pytest.fixture
+    def random_string(self):
+        return ''.join([
+            random.choice(string.ascii_uppercase)
+            for _ in range(10)
+        ])
 
     @pytest.yield_fixture
     def lead(self, client):
@@ -73,8 +82,8 @@ class TestEndToEnd(object):
             yield response
 
     @pytest.fixture
-    def export(self, client):
-        return client.create_lead_export()
+    def export(self, client, random_string):
+        return client.create_lead_export(random_string)
 
     def test_create_lead(self, client):
         with open(os.path.join(FIXTURE_DIR, 'lead.json')) as f:
@@ -155,8 +164,8 @@ class TestEndToEnd(object):
             response = client.create_activity_call(**call)
             assert all(False for k in call if k not in response), dict(response)
 
-    def test_create_lead_export(self, client):
-        export = client.create_lead_export()
+    def test_create_lead_export(self, client, random_string):
+        export = client.create_lead_export(random_string)
         assert export
 
     def test_get_export(self, client, export):
