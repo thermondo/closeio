@@ -25,25 +25,23 @@ def convert_errors():
         raise
 
     except SlumberBaseException as e:
-        if hasattr(e, 'content'):
+        if hasattr(e, 'response'):
             try:
-                error_info = json.loads(e.content)
+                error_info = json.loads(e.response.text)
                 if 'error' in error_info:
                     error_message = error_info['error']
                 else:
-                    error_message = e.content
+                    error_message = e.response.text
             except ValueError:
-                error_message = text_type(e.content)
-        else:
-            error_message = text_type(e)
+                error_message = e.response.text
 
-        if hasattr(e, 'response'):
             request = e.response.request
             request_data = 'url: {}\nbody: {}'.format(
                 request.url,
                 request.body,
             )
         else:
+            error_message = text_type(e)
             request_data = ''
 
         raise CloseIOError(error_message, e, request_data)
