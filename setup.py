@@ -24,6 +24,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='Denis Cornehl',
     author_email='denis.cornehl@gmail.com',
+    download_url='https://github.com/Thermondo/closeio',
     url='https://github.com/fasterweb/closeio',
     packages=[
         'closeio',
