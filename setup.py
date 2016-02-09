@@ -51,7 +51,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: Implementation :: PyPy',
     ],
     entry_points={'pytest11': ['closeio = closeio.contrib.pytest_plugin']},
 )
