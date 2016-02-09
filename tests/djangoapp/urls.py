@@ -1,8 +1,7 @@
-from django.conf.urls import include, patterns, url
+from django.conf.urls import include, url
 
 from closeio.contrib.django import urls
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^closeio/hook/', include(urls)),
-)
+]
