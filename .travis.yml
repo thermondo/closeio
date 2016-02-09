@@ -20,11 +20,14 @@ matrix:
     - python: "pypy3"
     - env: DJANGO="-e git+https://github.com/django/django.git#egg=Django"
 install:
-- pip install -U pip
-- pip install -r requirements_dev.txt
-- pip install $DJANGO
-- pip install coveralls
+  - pip install -U pip
+  - pip install -r requirements-dev.txt
+  - pip install $DJANGO
+  - pip install coveralls
 script:
-  coverage run --source=closeio -m py.test
+  - isort --check-only --recursive --diff .
+  - flake8 --jobs=2 .
+  - pep257 --verbose --explain --source --count
+  - coverage run --source=closeio -m 'pytest'
 after_success:
   coveralls

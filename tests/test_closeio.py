@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 """
 test_closeio
 ----------------------------------
 
 Tests for `closeio` module.
 """
+from __future__ import unicode_literals
 
-import unittest
 import datetime
 import types
+import unittest
 
-from closeio.utils import parse, convert
 from dateutil.tz import tzutc
+
+from closeio.utils import convert, parse
 
 LEAD = {
     "status_id": "stat_1ZdiZqcSIkoGVnNOyxiEY58eTGQmFNG3LPlEVQ4V7Nk",

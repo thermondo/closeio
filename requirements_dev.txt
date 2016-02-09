@@ -1,7 +1,0 @@
--r requirements.txt
--e .
-pytest
-pytest-flakes
-pytest-pep8
-pytest-django
-pytest-rerunfailures

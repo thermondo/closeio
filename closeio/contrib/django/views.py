@@ -8,13 +8,12 @@ import logging
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
-from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 
 from closeio import utils
 
 from . import signals
-
 
 logger = logging.getLogger(__name__)
 

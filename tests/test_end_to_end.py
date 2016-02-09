@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, unicode_literals
+
 import datetime
 import json
+import os
 import random
 import string
 import time
 
-from closeio.closeio import CloseIO
-from closeio import utils
-import os
 import pytest
 
+from closeio import utils
+from closeio.closeio import CloseIO
 
 API_KEY = os.environ.get('API_KEY')
 TEST_DIR = os.path.dirname(__file__)

@@ -1,10 +1,11 @@
-import threading
 import copy
 import itertools
+import threading
 from datetime import datetime
 
-from closeio.utils import Item, CloseIOError, parse_response
 from six import text_type
+
+from closeio.utils import CloseIOError, Item, parse_response
 
 threadlocal = threading.local()
 

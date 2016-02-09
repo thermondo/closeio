@@ -5,12 +5,12 @@ from __future__ import (
 
 import contextlib
 import json
-from six import text_type, string_types
 import types
 from datetime import date, datetime, time
 from functools import wraps
 
 import dateutil.parser
+from six import string_types, text_type
 from slumber.exceptions import SlumberBaseException
 
 from closeio.exceptions import CloseIOError
@@ -65,7 +65,7 @@ class Item(dict):
         self.__dict__ = self
 
 
-def parse(value):
+def parse(value):  # NoQA
     try:
         return Item({
             key: parse(value)
