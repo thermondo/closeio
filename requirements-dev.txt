@@ -5,7 +5,7 @@
 #    pip-compile requirements-dev.in
 #
 -e .
-click==6.4                # via pip-tools
+click==6.6                # via pip-tools
 coverage==4.0.3
 first==2.0.1              # via pip-tools
 flake8==2.5.4
