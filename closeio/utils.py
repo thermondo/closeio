@@ -149,6 +149,13 @@ def paginate(func, *args, **kwargs):
         with convert_errors():
             response = func(*args, **kwargs)
 
+        if not isinstance(response, dict):
+            raise CloseIOError(
+                'close.io response is not a dict, '
+                'so most likely could not be parsed. \n'
+                'body "{}"'.format(response)
+            )
+
         for item in response['data']:
             yield item
 
