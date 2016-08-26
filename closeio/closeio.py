@@ -282,7 +282,7 @@ class CloseIO(object):
     @handle_errors
     def create_activity_email(self, **kwargs):
         kwargs.setdefault('status', 'draft')
-        self._api.activity.email.post(kwargs)
+        return self._api.activity.email.post(kwargs)
 
     @parse_response
     @handle_errors
