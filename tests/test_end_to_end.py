@@ -165,6 +165,15 @@ class TestEndToEnd(object):
             response = client.create_activity_call(**call)
             assert all(False for k in call if k not in response), dict(response)
 
+    def test_create_activity_email(self, client, lead):
+        with open(os.path.join(FIXTURE_DIR, 'email.json')) as f:
+            call = utils.parse(json.load(f))
+            call.update({
+                'lead_id': lead['id'],
+            })
+            response = client.create_activity_email(**call)
+            assert all(False for k in call if k not in response), dict(response)
+
     def test_create_lead_export(self, client, random_string):
         export = client.create_lead_export(random_string)
         assert export

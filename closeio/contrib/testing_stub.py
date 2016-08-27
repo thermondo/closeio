@@ -259,8 +259,9 @@ class CloseIOStub(object):
             template = self.get_email_template(template_id)
             email['subject'] = template['subject']
             email['body_text'] = template['body']
-
+        email['id'] = 'testid_123'
         emails[lead_id].append(email)
+        return email
 
     @parse_response
     def create_activity_call(self, **kwargs):
