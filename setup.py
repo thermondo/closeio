@@ -1,25 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
-
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+with open('README.rst') as f:
+    readme = f.read()
+with open('HISTORY.rst') as f:
+    history = f.read().replace('.. :changelog:', '')
+PACKAGE = 'closeio'
+NAME = 'faster_closeio'
+VERSION = __import__(PACKAGE).__version__
 
 
 setup(
-    name='faster_closeio',
-    version='0.3.0',
+    name=NAME,
+    version=VERSION,
     description='Slim API wrapper to access close.io CRM',
     long_description=readme + '\n\n' + history,
     author='Denis Cornehl',

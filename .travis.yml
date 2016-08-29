@@ -1,30 +1,38 @@
 language: python
 sudo: false
 cache:
-  - pip
+- pip
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
+- '2.7'
+- '3.4'
+- '3.5'
 env:
   global:
-    - secure: OS5k0TUmxCV0FsKo/9T/UGDCd1Vtirm7/3BXvWbcsr+8TUZ3vpTDoXoAlIrryHLfjaAUyG4nrhzLeGe+VYAdcBr2smm2xHUj46MaKSKIaGKtmXjep8s4dceePKodzLL8dtgyAXEJSSt+FVeTCbmR5lMBXBSVP8xYHb6W1n0Z41g=
+  - secure: OS5k0TUmxCV0FsKo/9T/UGDCd1Vtirm7/3BXvWbcsr+8TUZ3vpTDoXoAlIrryHLfjaAUyG4nrhzLeGe+VYAdcBr2smm2xHUj46MaKSKIaGKtmXjep8s4dceePKodzLL8dtgyAXEJSSt+FVeTCbmR5lMBXBSVP8xYHb6W1n0Z41g=
   matrix:
-    - DJANGO="Django<1.9,>=1.8"
-    - DJANGO="Django<1.10,>=1.9"
-    - DJANGO="-e git+https://github.com/django/django.git#egg=Django"
+  - DJANGO="Django<1.9,>=1.8"
+  - DJANGO="Django<1.10,>=1.9"
+  - DJANGO="-e git+https://github.com/django/django.git#egg=Django"
 matrix:
   allow_failures:
-    - env: DJANGO="-e git+https://github.com/django/django.git#egg=Django"
+  - env: DJANGO="-e git+https://github.com/django/django.git#egg=Django"
 install:
-  - pip install -U pip
-  - pip install -r requirements-dev.txt
-  - pip install $DJANGO
-  - pip install coveralls
+- pip install -U pip
+- pip install -r requirements-dev.txt
+- pip install $DJANGO
+- pip install coveralls
 script:
-  - isort --check-only --recursive --diff .
-  - flake8 --jobs=2 .
-  - pep257 --verbose --explain --source --count
-  - coverage run --source=closeio -m 'pytest'
-after_success:
-  coveralls
+- isort --check-only --recursive --diff .
+- flake8 --jobs=2 .
+- pep257 --verbose --explain --source --count
+- coverage run --source=closeio -m 'pytest'
+after_success: coveralls
+deploy:
+  provider: pypi
+  user: codingjoe
+  password:
+    secure: EbCAfnLxHzVgyPe/4f1w5wbgBMrEjiPw/olfaDS0kIJjNFuAuWGiqyVQaSPgLsBteD9dYUuU/O95eVy1W5tYFySTc8FEXXXI7YBTMHZN+aFQzFoBcvE6g5npvPAdUU0W53g+13wiAUI9tMFTnOf0rG585qmzMEu0NY6R2dEOtTo=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: Thermondo/closeio
