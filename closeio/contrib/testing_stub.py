@@ -1,6 +1,7 @@
 import copy
 import itertools
 import threading
+import uuid
 from datetime import datetime
 
 from six import text_type
@@ -259,7 +260,8 @@ class CloseIOStub(object):
             template = self.get_email_template(template_id)
             email['subject'] = template['subject']
             email['body_text'] = template['body']
-        email['id'] = 'testid_123'
+
+        email['id'] = 'acti_{}'.format(uuid.uuid4().hex)
         emails[lead_id].append(email)
         return email
 
