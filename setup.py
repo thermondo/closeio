@@ -10,20 +10,21 @@ with open('README.rst') as f:
     readme = f.read()
 with open('HISTORY.rst') as f:
     history = f.read().replace('.. :changelog:', '')
-PACKAGE = 'closeio'
+PACKAGE = __import__('closeio')
 NAME = 'faster_closeio'
-VERSION = __import__(PACKAGE).__version__
+
+URL = 'https://github.com/Thermondo/closeio'
 
 
 setup(
     name=NAME,
-    version=VERSION,
+    version=PACKAGE.__version__,
     description='Slim API wrapper to access close.io CRM',
     long_description=readme + '\n\n' + history,
-    author='Denis Cornehl',
-    author_email='denis.cornehl@gmail.com',
-    download_url='https://github.com/Thermondo/closeio',
-    url='https://github.com/fasterweb/closeio',
+    author=PACKAGE.__author__,
+    author_email=PACKAGE.__email__,
+    download_url=URL,
+    url=URL,
     packages=[
         'closeio',
         'closeio.contrib',
