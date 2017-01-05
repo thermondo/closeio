@@ -14,7 +14,7 @@ mccabe==0.4.0             # via flake8
 pep257==0.7.0
 pep8-naming==0.4.1
 pep8==1.7.0               # via flake8
-pip-tools==1.6.5
+pip-tools==1.8.0
 py==1.4.31                # via pytest
 pyflakes==1.1.0           # rq.filter: <1.2.0,>1.2.2
 pytest-django==3.1.2
