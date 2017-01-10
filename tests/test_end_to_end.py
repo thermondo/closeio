@@ -134,6 +134,11 @@ class TestEndToEnd(object):
         assert response['is_complete'], dict(response)
 
     @pytest.mark.flaky(reruns=3)
+    def test_delete_task(self, client, task):
+        response = client.delete_task(task['id'])
+        assert response is True
+
+    @pytest.mark.flaky(reruns=3)
     def test_get_tasks(self, client, task):
         response = client.get_tasks(assigned_to=client.me()['id'])
         assert task in response, list(response)

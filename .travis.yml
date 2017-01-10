@@ -6,6 +6,7 @@ python:
 - '2.7'
 - '3.4'
 - '3.5'
+- '3.6'
 env:
   global:
   - secure: OS5k0TUmxCV0FsKo/9T/UGDCd1Vtirm7/3BXvWbcsr+8TUZ3vpTDoXoAlIrryHLfjaAUyG4nrhzLeGe+VYAdcBr2smm2xHUj46MaKSKIaGKtmXjep8s4dceePKodzLL8dtgyAXEJSSt+FVeTCbmR5lMBXBSVP8xYHb6W1n0Z41g=
