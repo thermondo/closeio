@@ -227,6 +227,11 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def delete_task(self, task_id):
+        return self._api.task(task_id).delete()
+
+    @parse_response
+    @handle_errors
     def get_tasks(self, **kwargs):
         kwargs = convert(kwargs)
         kwargs.update({
