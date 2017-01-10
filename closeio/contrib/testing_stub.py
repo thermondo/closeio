@@ -228,6 +228,17 @@ class CloseIOStub(object):
         return self._get_task(task_id)
 
     @parse_response
+    def delete_task(self, task_id):
+        tasks = self._data('tasks', {})
+
+        for lead_id, tasks_list in tasks.items():
+            for t in tasks_list:
+                if t['id'] == task_id:
+                    tasks[lead_id].remove(t)
+                    return True
+        raise CloseIOError()
+
+    @parse_response
     def update_lead(self, lead_id, fields):
         leads = self._data('leads', {})
 
