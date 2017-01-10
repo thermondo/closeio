@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 __author__ = 'Denis Cornehl'
 __email__ = 'denis.cornehl@gmail.com'
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 
 
 try:
