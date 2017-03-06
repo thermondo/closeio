@@ -4,7 +4,6 @@ from __future__ import (
 )
 
 import contextlib
-import json
 import types
 from datetime import date, datetime, time
 from functools import wraps
@@ -13,7 +12,7 @@ import dateutil.parser
 from six import string_types, text_type
 from slumber.exceptions import SlumberBaseException
 
-from closeio.exceptions import CloseIOError
+from closeio.exceptions import CloseIOError, RateLimitError
 
 
 @contextlib.contextmanager
@@ -26,13 +25,13 @@ def convert_errors():
 
     except SlumberBaseException as e:
         if hasattr(e, 'response'):
+
             try:
-                error_info = json.loads(e.response.text)
-                if 'error' in error_info:
-                    error_message = error_info['error']
-                else:
-                    error_message = e.response.text
-            except ValueError:
+                error_info = e.response.json()
+                if e.response.status_code == 429:
+                    raise RateLimitError(**error_info['error'])
+                error_message = error_info['error']
+            except (ValueError, KeyError):
                 error_message = e.response.text
 
             request = e.response.request
