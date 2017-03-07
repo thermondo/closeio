@@ -462,7 +462,7 @@ class CloseIO(object):
         try:
             self.find_user_id(email)
             return True
-        except:
+        except Exception:
             return False
 
     @parse_response
