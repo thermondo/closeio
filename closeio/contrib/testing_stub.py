@@ -408,9 +408,7 @@ class CloseIOStub(object):
     def get_email_template(self, template_id):
         email_templates = self._data('email_templates', [])
 
-        template_id = int(template_id)
-
-        if template_id >= len(email_templates):
+        if len(email_templates) < 1:
             raise CloseIOError()
 
         data = copy.deepcopy(email_templates[template_id])
@@ -429,9 +427,7 @@ class CloseIOStub(object):
     def delete_email_template(self, template_id):
         email_templates = self._data('email_templates', [])
 
-        template_id = int(template_id)
-
-        if template_id >= len(email_templates):
+        if len(email_templates) < 1:
             raise CloseIOError()
 
         del email_templates[template_id]
