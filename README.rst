@@ -19,7 +19,6 @@ closeio
 Slim API wrapper to access close.io CRM
 
 * Free software: BSD license
-* Documentation: http://closeio.rtfd.org.
 
 Features
 --------
