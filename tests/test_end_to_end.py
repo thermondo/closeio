@@ -39,9 +39,9 @@ class TestEndToEnd(object):
             i = 0
             while not list(client.get_leads(query)):
                 i += 1
-                if i == 10:
-                    raise RuntimeWarning("Lead wasn't indexed within 10 seconds")
-                time.sleep(1)
+                if i == 3:
+                    raise RuntimeWarning("Lead wasn't indexed within 15 seconds")
+                time.sleep(5)
 
         with open(os.path.join(FIXTURE_DIR, 'lead.json')) as f:
             lead = utils.parse(json.load(f))
@@ -102,7 +102,8 @@ class TestEndToEnd(object):
     def test_get_leads(self, client, lead):
         query = 'name:{name}'.format(**lead)
         response = client.get_leads(query=query)
-        assert lead in response, list(response)
+        lead_ids = [l['id'] for l in response]
+        assert lead['id'] in lead_ids, list(response)
 
     def test_update_lead(self, client, lead):
         fields = {

@@ -1,10 +1,10 @@
 -e .
-pip-tools
-pytest
-pytest-django
-pytest-rerunfailures
 coverage
 flake8
 isort
 pep257
 pep8-naming
+pip-tools
+pytest
+pytest-django
+pytest-rerunfailures
