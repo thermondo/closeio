@@ -19,7 +19,7 @@ py==1.4.34 # via pytest
 pyflakes==1.1.0           # rq.filter: <1.2.0,>1.2.2
 pytest-django==3.1.2
 pytest-rerunfailures==3.1
-pytest==3.2.1
+pytest==3.2.2
 python-dateutil==2.6.1
 requests==2.18.4 # via slumber
 six==1.10.0               # via pip-tools, python-dateutil
