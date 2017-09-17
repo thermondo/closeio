@@ -22,5 +22,5 @@ pytest-rerunfailures==3.1
 pytest==3.2.2
 python-dateutil==2.6.1
 requests==2.18.4 # via slumber
-six==1.10.0               # via pip-tools, python-dateutil
+six==1.11.0               # via pip-tools, python-dateutil
 slumber==0.7.1
