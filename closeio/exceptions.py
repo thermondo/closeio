@@ -20,12 +20,13 @@ class RateLimitError(CloseIOError):
 
     """
 
-    def __init__(self, message, rate_reset, rate_limit, rate_window, *args, **kwargs):
+    def __init__(self, message, rate_reset, rate_limit, rate_window, rate_limit_type, **kwargs):
         self.message = message
         self.rate_reset = rate_reset
         self.rate_limit = rate_limit
         self.rate_window = rate_window
-        super(RateLimitError, self).__init__(*args, **kwargs)
+        self.rate_limit_type = rate_limit_type
+        super(RateLimitError, self).__init__()
 
     def __str__(self):
         return self.message
