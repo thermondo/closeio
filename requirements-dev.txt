@@ -15,7 +15,7 @@ pydocstyle==2.1.1
 pep8-naming==0.4.1
 pep8==1.7.1               # via flake8
 pip-tools==1.10.1
-py==1.4.34 # via pytest
+py==1.5.2 # via pytest
 pyflakes==1.1.0           # rq.filter: <1.2.0,>1.2.2
 pytest-django==3.1.2
 pytest-rerunfailures==3.1
