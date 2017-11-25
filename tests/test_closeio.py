@@ -1,13 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 test_closeio
 ----------------------------------
 
 Tests for `closeio` module.
 """
-from __future__ import unicode_literals
-
 import datetime
 import types
 import unittest

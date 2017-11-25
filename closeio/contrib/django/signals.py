@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from django.dispatch import Signal
 
 closeio_event = Signal(providing_args=["instance", "model", "event"], use_caching=True)
