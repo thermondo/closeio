@@ -3,9 +3,6 @@ sudo: false
 cache:
 - pip
 python:
-- '2.7'
-- '3.4'
-- '3.5'
 - '3.6'
 env:
   global:
@@ -24,8 +21,6 @@ install:
 - pip install coveralls
 script:
 - isort --check-only --recursive --diff .
-- flake8 --jobs=2 .
-- pycodestyle
 - coverage run --source=closeio -m 'pytest'
 after_success: coveralls
 deploy:
