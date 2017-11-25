@@ -8,12 +8,12 @@ env:
   global:
   - secure: eO08tZokK+Etpp4ISvxVaWHe5tN6PC/SzLHcltqgvqRYa7L9zY5NKQjiY5LvUw1onnbbSPMnTabFWrcw3VtoQ1he5M2NbqqTSLTxT9dSWXhy6KRymNXVkEv4Ar6WWiQDUPlyMY7XTG35G5jo6C3LBer5FRKDpEAPlw51z4TyML0=
   matrix:
-  - DJANGO="Django<1.9,>=1.8"
-  - DJANGO="Django<1.10,>=1.9"
-  - DJANGO="-e git+https://github.com/django/django.git#egg=Django"
+  - DJANGO="https://github.com/django/django/archive/stable/1.11.x.tar.gz#egg=django"
+  - DJANGO="https://github.com/django/django/archive/stable/2.0.x.tar.gz#egg=django"
+  - DJANGO="https://github.com/django/django/archive/master.tar.gz#egg=django"
 matrix:
   allow_failures:
-  - env: DJANGO="-e git+https://github.com/django/django.git#egg=Django"
+  - env: DJANGO="https://github.com/django/django/archive/master.tar.gz#egg=django"
 install:
 - pip install -U codecov
 - pip install -r requirements-dev.txt
