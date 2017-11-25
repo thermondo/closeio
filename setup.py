@@ -38,7 +38,7 @@ setup(
         'python-dateutil',
         'six',
     ],
-    license="BSD",
+    license="APL2",
     zip_safe=False,
     keywords='closeio',
     classifiers=[
