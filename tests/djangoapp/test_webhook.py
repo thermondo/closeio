@@ -3,8 +3,8 @@ from datetime import date
 from functools import partial
 
 import pytest
-from django.core.urlresolvers import reverse
 from django.test.client import Client
+from django.urls import reverse
 
 from closeio.contrib.django import signals, views
 
