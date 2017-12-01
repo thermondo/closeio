@@ -11,8 +11,8 @@ Slim API wrapper to access close.io CRM
 .. |ci| image:: https://travis-ci.org/Thermondo/closeio.svg?branch=master
    :target: https://travis-ci.org/Thermondo/closeio
 
-.. |coverage| image:: https://coveralls.io/repos/Thermondo/closeio/badge.svg?branch=master
-   :target: https://coveralls.io/r/Thermondo/closeio
+.. |codecov| image:: https://codecov.io/gh/Thermondo/closeio/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/Thermondo/closeio
 
 .. |license| image:: https://img.shields.io/badge/license-APL_2-blue.svg
    :target: LICENSE
