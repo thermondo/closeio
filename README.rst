@@ -1,4 +1,4 @@
-|version| |ci| |coverage| |license|
+|version| |ci| |codecov| |license|
 
 closeio
 =======
