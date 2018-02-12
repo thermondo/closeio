@@ -534,6 +534,8 @@ class CloseIOStub(object):
         exports = self._data('exports', [])
         export = dict(
             format=format,
+            status='done',
+            download_url='https://example.com',
             type='leads',
             query=query,
         )
