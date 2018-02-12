@@ -522,7 +522,7 @@ class CloseIOStub(object):
         exports = self._data('exports', [])
         export_id = int(id)
 
-        export = (item for item in exports if item["id"] == export_id).next()
+        export = next((item for item in exports if item["id"] == export_id))
 
         if not export:
             raise CloseIOError()
