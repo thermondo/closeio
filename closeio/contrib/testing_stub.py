@@ -309,8 +309,8 @@ class CloseIOStub(object):
             'text': text,
             'due_date': due_date.isoformat() if due_date else None,
             'is_complete': is_complete,
-            'date_created': datetime.utcnow(),
-            'date_updated': datetime.utcnow(),
+            'date_created': datetime.utcnow().isoformat(),
+            'date_updated': datetime.utcnow().isoformat(),
         }
 
         tasks[lead_id].append(task)
