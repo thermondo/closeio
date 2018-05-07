@@ -303,17 +303,15 @@ class CloseIOStub(object):
             tasks[lead_id] = []
 
         task = {
-            "lead_id": lead_id,
-            "assigned_to": str(assigned_to),
-            "text": text,
-            "due_date": due_date.isoformat() if due_date else None,
-            "is_complete": is_complete
+            'id': 'task_{}'.format(uuid.uuid4().hex),
+            'lead_id': lead_id,
+            'assigned_to': str(assigned_to),
+            'text': text,
+            'due_date': due_date.isoformat() if due_date else None,
+            'is_complete': is_complete,
+            'date_created': datetime.utcnow().isoformat(),
+            'date_updated': datetime.utcnow().isoformat(),
         }
-
-        task['id'] = '{}_{}'.format(
-            lead_id,
-            len(tasks[lead_id]) + 1
-        )
 
         tasks[lead_id].append(task)
 
