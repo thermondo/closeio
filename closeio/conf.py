@@ -1,5 +1,6 @@
 """
 Additional settings for Django.
+
 ``CLOSEIO_ORGANIZATION_ID`` (required):
     Each Closeio webhook contains organization id, pointing the origin of the request.
     This can be used as an extra protection and distinguish between staging and production orgs.
