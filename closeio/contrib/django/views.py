@@ -10,6 +10,7 @@ from django.views.generic import View
 from closeio import utils
 
 from . import signals
+from ...conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,12 @@ class CloseIOWebHook(View):
         except KeyError:
             logger.exception("CloseIO webhook request could not be dispatched.")
             return HttpResponseBadRequest()
+
+        # here we are checking which organization request comes from
+        organization_id = data.get('organization_id')
+        if organization_id != settings.CLOSEIO_ORGANIZATION_ID:
+            logger.warning("CloseIO webhook request from wrong organization: %s", organization_id)
+            return HttpResponse()
 
         data_to_send = dict(
             instance=data

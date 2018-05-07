@@ -1,3 +1,4 @@
+django-appconf
 python-dateutil>=2.2
 requests>=2.2.1
 six>=1.6.1

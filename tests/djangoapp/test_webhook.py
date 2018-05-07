@@ -64,6 +64,17 @@ def closeio_signals():
     return data
 
 
+@pytest.fixture
+def closeio_hook_content():
+    return {
+        'id': 'foo',
+        'data': 'bar',
+        'destination_id': 'baz',
+        'source_id': 'thud',
+        'organization_id': 'test_org_id'
+    }
+
+
 def test_no_data(csrf_client):
     url = reverse('closeio_webhook')
 
@@ -106,7 +117,8 @@ def test_wrong_json(csrf_client):
     assert response.status_code == 400
 
 
-def test_ok_unknown(csrf_client, closeio_signals):
+@pytest.mark.parametrize('organization_id', ['wrong_id', None])
+def test_wrong_organization_id(csrf_client, closeio_signals, organization_id):
     url = reverse('closeio_webhook')
 
     response = csrf_client.post(
@@ -114,7 +126,25 @@ def test_ok_unknown(csrf_client, closeio_signals):
         data=json.dumps(dict(
             event='testevent',
             model='testmodel',
-            data=dict(data=1),
+            data=dict(id=1, organization_id=organization_id),
+        )),
+        content_type="application/json")
+
+    # We should get 200 response (so Closeio would not need to handle this request),
+    #  but without triggered signals, since this is an incorrect organization
+    assert response.status_code == 200
+    assert closeio_signals == []
+
+
+def test_ok_unknown(csrf_client, closeio_signals, closeio_hook_content):
+    url = reverse('closeio_webhook')
+
+    response = csrf_client.post(
+        url,
+        data=json.dumps(dict(
+            event='testevent',
+            model='testmodel',
+            data=closeio_hook_content,
         )),
         content_type="application/json")
 
@@ -123,7 +153,7 @@ def test_ok_unknown(csrf_client, closeio_signals):
     assert closeio_signals == [
         ('closeio_event', (), {
             'event': 'testevent',
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -131,7 +161,7 @@ def test_ok_unknown(csrf_client, closeio_signals):
     ]
 
 
-def test_ok_create(csrf_client, closeio_signals):
+def test_ok_create(csrf_client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
     response = csrf_client.post(
@@ -139,7 +169,7 @@ def test_ok_create(csrf_client, closeio_signals):
         data=json.dumps(dict(
             event='create',
             model='testmodel',
-            data=dict(data=1),
+            data=closeio_hook_content,
         )),
         content_type="application/json")
 
@@ -147,14 +177,14 @@ def test_ok_create(csrf_client, closeio_signals):
 
     assert closeio_signals == [
         ('closeio_create', (), {
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_create,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'create',
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -162,47 +192,41 @@ def test_ok_create(csrf_client, closeio_signals):
     ]
 
 
-def test_ok_lead_create(csrf_client, closeio_signals):
+def test_ok_lead_create(csrf_client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
+
+    # let's check that date is being parsed
+    closeio_hook_content['date_'] = '2014-01-01'
 
     response = csrf_client.post(
         url,
         data=json.dumps(dict(
             event='create',
             model='lead',
-            data=dict(
-                data=1,
-                date_='2014-01-01',
-            ),
+            data=closeio_hook_content,
         )),
         content_type="application/json")
 
     assert response.status_code == 200
 
+    result_content = closeio_hook_content.copy()
+    result_content['date_'] = date(2014, 1, 1)
+
     assert closeio_signals == [
         ('closeio_create', (), {
-            'instance': dict(
-                data=1,
-                date_=date(2014, 1, 1),
-            ),
+            'instance': result_content,
             'model': 'lead',
             'signal': signals.closeio_create,
             'sender': views.CloseIOWebHook,
         }),
         ('lead_create', (), {
-            'instance': dict(
-                data=1,
-                date_=date(2014, 1, 1),
-            ),
+            'instance': result_content,
             'signal': signals.lead_create,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'create',
-            'instance': dict(
-                data=1,
-                date_=date(2014, 1, 1),
-            ),
+            'instance': result_content,
             'model': 'lead',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -210,7 +234,7 @@ def test_ok_lead_create(csrf_client, closeio_signals):
     ]
 
 
-def test_ok_update(csrf_client, closeio_signals):
+def test_ok_update(csrf_client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
     response = csrf_client.post(
@@ -218,7 +242,7 @@ def test_ok_update(csrf_client, closeio_signals):
         data=json.dumps(dict(
             event='update',
             model='testmodel',
-            data=dict(data=1),
+            data=closeio_hook_content,
         )),
         content_type="application/json")
 
@@ -226,14 +250,14 @@ def test_ok_update(csrf_client, closeio_signals):
 
     assert closeio_signals == [
         ('closeio_update', (), {
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_update,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'update',
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -241,34 +265,35 @@ def test_ok_update(csrf_client, closeio_signals):
     ]
 
 
-def test_ok_lead_update(client, closeio_signals):
+def test_ok_lead_update(client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='update',
-                               model='lead',
-                               data=dict(data=1),
-                           )),
-                           content_type="application/json")
+    response = client.post(
+        url,
+        data=json.dumps(dict(
+            event='update',
+            model='lead',
+            data=closeio_hook_content,
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 
     assert closeio_signals == [
         ('closeio_update', (), {
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'lead',
             'signal': signals.closeio_update,
             'sender': views.CloseIOWebHook,
         }),
         ('lead_update', (), {
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'signal': signals.lead_update,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'update',
-            'instance': dict(data=1),
+            'instance': closeio_hook_content,
             'model': 'lead',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -276,7 +301,7 @@ def test_ok_lead_update(client, closeio_signals):
     ]
 
 
-def test_ok_delete(csrf_client, closeio_signals):
+def test_ok_delete(csrf_client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
     response = csrf_client.post(
@@ -284,7 +309,7 @@ def test_ok_delete(csrf_client, closeio_signals):
         data=json.dumps(dict(
             event='delete',
             model='testmodel',
-            data=dict(id=321),
+            data=closeio_hook_content,
         )),
         content_type="application/json")
 
@@ -292,14 +317,14 @@ def test_ok_delete(csrf_client, closeio_signals):
 
     assert closeio_signals == [
         ('closeio_delete', (), {
-            'instance_id': 321,
+            'instance_id': closeio_hook_content['id'],
             'model': 'testmodel',
             'signal': signals.closeio_delete,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'delete',
-            'instance': dict(id=321),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -307,34 +332,35 @@ def test_ok_delete(csrf_client, closeio_signals):
     ]
 
 
-def test_ok_lead_delete(client, closeio_signals):
+def test_ok_lead_delete(client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='delete',
-                               model='lead',
-                               data=dict(id=321),
-                           )),
-                           content_type="application/json")
+    response = client.post(
+        url,
+        data=json.dumps(dict(
+            event='delete',
+            model='lead',
+            data=closeio_hook_content,
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 
     assert closeio_signals == [
         ('closeio_delete', (), {
-            'instance_id': 321,
+            'instance_id': closeio_hook_content['id'],
             'model': 'lead',
             'signal': signals.closeio_delete,
             'sender': views.CloseIOWebHook,
         }),
         ('lead_delete', (), {
-            'instance_id': 321,
+            'instance_id': closeio_hook_content['id'],
             'signal': signals.lead_delete,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'delete',
-            'instance': dict(id=321),
+            'instance': closeio_hook_content,
             'model': 'lead',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -342,7 +368,7 @@ def test_ok_lead_delete(client, closeio_signals):
     ]
 
 
-def test_ok_merge(csrf_client, closeio_signals):
+def test_ok_merge(csrf_client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
     response = csrf_client.post(
@@ -350,7 +376,7 @@ def test_ok_merge(csrf_client, closeio_signals):
         data=json.dumps(dict(
             event='merge',
             model='testmodel',
-            data=dict(source_id=321, destination_id=123),
+            data=closeio_hook_content,
         )),
         content_type="application/json")
 
@@ -358,15 +384,15 @@ def test_ok_merge(csrf_client, closeio_signals):
 
     assert closeio_signals == [
         ('closeio_merge', (), {
-            'source_id': 321,
-            'destination_id': 123,
+            'source_id': closeio_hook_content['source_id'],
+            'destination_id': closeio_hook_content['destination_id'],
             'model': 'testmodel',
             'signal': signals.closeio_merge,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'merge',
-            'instance': dict(source_id=321, destination_id=123),
+            'instance': closeio_hook_content,
             'model': 'testmodel',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
@@ -374,36 +400,37 @@ def test_ok_merge(csrf_client, closeio_signals):
     ]
 
 
-def test_ok_lead_merge(client, closeio_signals):
+def test_ok_lead_merge(client, closeio_signals, closeio_hook_content):
     url = reverse('closeio_webhook')
 
-    response = client.post(url,
-                           data=json.dumps(dict(
-                               event='merge',
-                               model='lead',
-                               data=dict(source_id=321, destination_id=123),
-                           )),
-                           content_type="application/json")
+    response = client.post(
+        url,
+        data=json.dumps(dict(
+            event='merge',
+            model='lead',
+            data=closeio_hook_content,
+        )),
+        content_type="application/json")
 
     assert response.status_code == 200
 
     assert closeio_signals == [
         ('closeio_merge', (), {
-            'source_id': 321,
-            'destination_id': 123,
+            'source_id': closeio_hook_content['source_id'],
+            'destination_id': closeio_hook_content['destination_id'],
             'model': 'lead',
             'signal': signals.closeio_merge,
             'sender': views.CloseIOWebHook,
         }),
         ('lead_merge', (), {
-            'source_id': 321,
-            'destination_id': 123,
+            'source_id': closeio_hook_content['source_id'],
+            'destination_id': closeio_hook_content['destination_id'],
             'signal': signals.lead_merge,
             'sender': views.CloseIOWebHook,
         }),
         ('closeio_event', (), {
             'event': 'merge',
-            'instance': dict(source_id=321, destination_id=123),
+            'instance': closeio_hook_content,
             'model': 'lead',
             'signal': signals.closeio_event,
             'sender': views.CloseIOWebHook,
