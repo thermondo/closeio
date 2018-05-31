@@ -2,7 +2,7 @@ import copy
 import itertools
 import threading
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from closeio.utils import CloseIOError, Item, parse_response
 
@@ -126,7 +126,7 @@ class CloseIOStub(object):
             data['id'] = str(len(leads) + 1)
 
         data['organization_id'] = 'xx'
-        data['date_created'] = datetime.utcnow()
+        data['date_created'] = datetime.now(timezone.utc)
 
         for idx, contact in enumerate(data.get('contacts', [])):
             if not contact.get('id'):
@@ -309,8 +309,8 @@ class CloseIOStub(object):
             'text': text,
             'due_date': due_date.isoformat() if due_date else None,
             'is_complete': is_complete,
-            'date_created': datetime.utcnow().isoformat(),
-            'date_updated': datetime.utcnow().isoformat(),
+            'date_created': datetime.now(timezone.utc).isoformat(),
+            'date_updated': datetime.now(timezone.utc).isoformat(),
         }
 
         tasks[lead_id].append(task)
@@ -488,7 +488,7 @@ class CloseIOStub(object):
             data['id'] = str(len(opportunity_keys) + 1)
 
         data['organization_id'] = 'xx'
-        data['date_created'] = datetime.utcnow()
+        data['date_created'] = datetime.now(timezone.utc)
 
         opportunities[data['id']] = data
         opportunity_keys[data['id']] = data
