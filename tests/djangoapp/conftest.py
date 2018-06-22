@@ -20,5 +20,6 @@ def pytest_configure():
             'django.contrib.messages.middleware.MessageMiddleware',
             'django.middleware.clickjacking.XFrameOptionsMiddleware',
         ),
+        CLOSEIO_ORGANIZATION_ID='test_org_id'
     )
     django.setup()
