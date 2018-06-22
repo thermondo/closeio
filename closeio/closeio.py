@@ -37,6 +37,12 @@ class CloseIO(object):
 
         return self._api_cache
 
+    # undocumented, hidden API - use with care
+    @parse_response
+    @handle_errors
+    def api_key(self):
+        return self._api.api_key.get()
+
     @parse_response
     @handle_errors
     def me(self):
