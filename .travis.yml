@@ -25,11 +25,11 @@ after_success:
 - codecov
 deploy:
   provider: pypi
+  skip_existing: true
   user: codingjoe
   password:
     secure: EbCAfnLxHzVgyPe/4f1w5wbgBMrEjiPw/olfaDS0kIJjNFuAuWGiqyVQaSPgLsBteD9dYUuU/O95eVy1W5tYFySTc8FEXXXI7YBTMHZN+aFQzFoBcvE6g5npvPAdUU0W53g+13wiAUI9tMFTnOf0rG585qmzMEu0NY6R2dEOtTo=
   on:
-    skip_existing: true
     tags: true
     distributions: sdist bdist_wheel
     repo: Thermondo/closeio
