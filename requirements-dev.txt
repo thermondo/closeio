@@ -1,6 +1,6 @@
 -e .
-coverage
-isort
-pytest
-pytest-django
-pytest-rerunfailures
+coverage>=4.5.1
+isort>=4.3.4
+pytest>=3.6.2
+pytest-django>=3.3.2
+pytest-rerunfailures>=4.1
