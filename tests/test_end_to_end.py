@@ -182,3 +182,6 @@ class TestEndToEnd(object):
 
     def test_get_export(self, client, export):
         assert client.get_export(export['id'])
+
+    def test_api_key(self, client):
+        assert client.api_key()

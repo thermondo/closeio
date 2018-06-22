@@ -550,3 +550,16 @@ class CloseIOStub(object):
         export['id'] = len(exports) + 1
         exports.append(export)
         return self.get_export(export['id'])
+
+    @parse_response
+    def api_key(self):
+        return Item({
+            'has_more': False,
+            'data': [{
+                'date_updated': datetime.now(timezone.utc),
+                'date_created': datetime.now(timezone.utc),
+                'user_id': self.get_user(0)['id'],
+                'organization_id': 'xx',
+                'key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            }],
+        })
