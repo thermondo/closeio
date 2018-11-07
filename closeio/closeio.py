@@ -292,16 +292,16 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
+    def create_activity_call(self, **kwargs):
+        return self._api.activity.call.post(kwargs)
+
+    @parse_response
+    @handle_errors
     def get_activity_email(self, lead_id):
         return paginate(
             self._api.activity.email.get,
             lead_id=lead_id,
         )
-
-    @parse_response
-    @handle_errors
-    def create_activity_call(self, **kwargs):
-        return self._api.activity.call.post(kwargs)
 
     @parse_response
     @handle_errors
@@ -329,6 +329,21 @@ class CloseIO(object):
         return paginate(
             self._api.activity.get,
             **kwargs)
+
+    @parse_response
+    @handle_errors
+    def delete_activity_email(self, activity_id):
+        return self._api.activity.email(activity_id).delete()
+
+    @parse_response
+    @handle_errors
+    def delete_activity_call(self, activity_id):
+        return self._api.activity.call(activity_id).delete()
+
+    @parse_response
+    @handle_errors
+    def delete_activity_note(self, activity_id):
+        return self._api.activity.note(activity_id).delete()
 
     @parse_response
     @handle_errors

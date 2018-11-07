@@ -295,6 +295,39 @@ class CloseIOStub(object):
         notes[lead_id].append(note)
 
     @parse_response
+    def delete_activity_email(self, activity_id):
+        emails = self._data('activity_emails', {})
+
+        for lead_id, email_list in emails.items():
+            for email in email_list:
+                if email['id'] == activity_id:
+                    emails[lead_id].remove(email)
+                    return True
+        raise CloseIOError()
+
+    @parse_response
+    def delete_activity_call(self, activity_id):
+        calls = self._data('activity_calls', {})
+
+        for lead_id, call_list in calls.items():
+            for call in call_list:
+                if call['id'] == activity_id:
+                    calls[lead_id].remove(call)
+                    return True
+        raise CloseIOError()
+
+    @parse_response
+    def delete_activity_note(self, activity_id):
+        notes = self._data('activity_note', {})
+
+        for lead_id, note_list in notes.items():
+            for note in note_list:
+                if note['id'] == activity_id:
+                    notes[lead_id].remove(note)
+                    return True
+        raise CloseIOError()
+
+    @parse_response
     def create_task(self, lead_id, assigned_to, text, due_date=None,
                     is_complete=False):
         tasks = self._data('tasks', {})
