@@ -278,6 +278,7 @@ class CloseIOStub(object):
     def create_activity_call(self, **kwargs):
         calls = self._data('activity_calls', {})
         call = kwargs
+        call['id'] = 'acti_{}'.format(uuid.uuid4().hex)
         lead_id = call['lead_id']
 
         if lead_id not in calls:
@@ -286,8 +287,11 @@ class CloseIOStub(object):
         calls[lead_id].append(call)
 
     @parse_response
-    def create_activity_note(self, lead_id, note):
+    def create_activity_note(self, **kwargs):
         notes = self._data('activity_notes', {})
+        note = kwargs
+        note['id'] = 'acti_{}'.format(uuid.uuid4().hex)
+        lead_id = note['lead_id']
 
         if lead_id not in notes:
             notes[lead_id] = []
@@ -318,7 +322,7 @@ class CloseIOStub(object):
 
     @parse_response
     def delete_activity_note(self, activity_id):
-        notes = self._data('activity_note', {})
+        notes = self._data('activity_notes', {})
 
         for lead_id, note_list in notes.items():
             for note in note_list:
