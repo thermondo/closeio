@@ -94,7 +94,7 @@ class TestEndToEnd(object):
         response = client.get_lead(lead['id'])
         assert all(False for k in lead if k not in response), dict(response)
 
-    @pytest.mark.flaky(reruns=3)
+    @pytest.mark.flaky(reruns=5)
     def test_get_leads(self, client, lead):
         query = 'name:{name}'.format(**lead)
         response = client.get_leads(query=query)
