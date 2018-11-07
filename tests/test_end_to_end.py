@@ -176,6 +176,47 @@ class TestEndToEnd(object):
             response = client.create_activity_email(**call)
             assert all(False for k in call if k not in response), dict(response)
 
+    def test_delete_activity_email(self, client, lead):
+        with open(os.path.join(FIXTURE_DIR, 'email.json')) as f:
+            email = utils.parse(json.load(f))
+            email.update({
+                'lead_id': lead['id'],
+            })
+            response = client.create_activity_email(**email)
+            activity_id = response['id']
+
+            response = client.delete_activity_email(activity_id)
+            assert response is True
+
+            assert list(client.get_activity_email(lead['id'])) == []
+
+    def test_delete_activity_call(self, client, lead):
+        with open(os.path.join(FIXTURE_DIR, 'call.json')) as f:
+            call = utils.parse(json.load(f))
+            call.update({
+                'lead_id': lead['id'],
+            })
+            response = client.create_activity_call(**call)
+            activity_id = response['id']
+
+            response = client.delete_activity_call(activity_id)
+            assert response is True
+
+            assert list(client.get_activity_call(lead['id'])) == []
+
+    def test_delete_activity_note(self, client, lead):
+        note = {
+            'note': 'this is a test note.',
+            'lead_id': lead['id'],
+        }
+        response = client.create_activity_note(**note)
+        activity_id = response['id']
+
+        response = client.delete_activity_note(activity_id)
+        assert response is True
+
+        assert list(client.get_activity_note(lead['id'])) == []
+
     def test_create_lead_export(self, client, random_string):
         export = client.create_lead_export(random_string)
         assert export
