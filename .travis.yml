@@ -17,6 +17,7 @@ matrix:
 install:
 - pip install -U codecov
 - pip install -r requirements-dev.txt
+- pip uninstall --yes django
 - pip install $DJANGO
 script:
 - isort --check-only --recursive --diff .
