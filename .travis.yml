@@ -19,8 +19,8 @@ install:
 - pip install -U codecov isort
 - pip install $DJANGO
 script:
-- isort --check-only --recursive --diff .
 - coverage run --source=closeio setup.py test
+- isort --check-only --recursive --diff .
 after_success:
 - codecov
 deploy:
