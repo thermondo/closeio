@@ -4,7 +4,7 @@
 *.so
 
 # Packages
-*.egg
+*.eggs
 *.egg-info
 dist
 build
@@ -44,3 +44,5 @@ docs/_build
 
 .cache
 .pytest_cache
+
+.env
