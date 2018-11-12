@@ -6,7 +6,7 @@ python:
 - '3.6'
 env:
   global:
-  - secure: eO08tZokK+Etpp4ISvxVaWHe5tN6PC/SzLHcltqgvqRYa7L9zY5NKQjiY5LvUw1onnbbSPMnTabFWrcw3VtoQ1he5M2NbqqTSLTxT9dSWXhy6KRymNXVkEv4Ar6WWiQDUPlyMY7XTG35G5jo6C3LBer5FRKDpEAPlw51z4TyML0=
+  - secure: fXlEmwz4hbxQI+vSp3CRYEkz9LG0K0d8E/ubP9k8emM7fteqmJ/8F+Ry1z60N7n7eaj/xqGArX3yFEvGKuGeQh8wappnfiOor17ralD/5ZfbtfNd6L0W8I9Ec/+Fh307EkpqsMmDt7IQ9p061m+S91Q9lXkIKMBCHrttgyRPO1w=
   matrix:
   - DJANGO="https://github.com/django/django/archive/stable/2.0.x.tar.gz#egg=django"
   - DJANGO="https://github.com/django/django/archive/stable/2.1.x.tar.gz#egg=django"
