@@ -5,8 +5,9 @@ import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
-from closeio.utils import CloseIOError, Item, parse_response
 from dateutil.parser import parse
+
+from closeio.utils import CloseIOError, Item, parse_response
 
 threadlocal = threading.local()
 
