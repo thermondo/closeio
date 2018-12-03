@@ -6,7 +6,7 @@ from requests.adapters import HTTPAdapter
 
 from closeio.exceptions import CloseIOError
 from closeio.utils import (
-    DummyCookieJar, convert, handle_errors, paginate, parse_response
+    DummyCookieJar, convert, handle_errors, paginate, parse_response, paginate_via_cursor
 )
 
 logger = logging.getLogger(__name__)
@@ -507,3 +507,11 @@ class CloseIO(object):
     @handle_errors
     def get_export(self, id):
         return self._api.export(id).get()
+
+    @parse_response
+    @handle_errors
+    def get_event_logs(self, **kwargs):
+        return paginate_via_cursor(
+            self._api.event.get,
+            **kwargs
+        )

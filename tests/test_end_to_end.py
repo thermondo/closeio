@@ -217,6 +217,26 @@ class TestEndToEnd(object):
 
         assert list(client.get_activity_note(lead['id'])) == []
 
+    def test_get_event_logs(self, client, task):
+        task_id = task['id']
+
+        logs = client.get_event_logs(object_type='task.lead', action='created')
+        logs = list(logs)
+        assert len(logs) >= 1
+        assert logs[0]['object_id'] == task_id
+        assert all(log['action'] == 'created' for log in logs)
+
+        iso_now = datetime.datetime.utcnow().isoformat()
+        client.delete_task(task['id'])
+        time.sleep(1)  # give closeio some time to create the event log on their system
+
+        logs = client.get_event_logs(date_updated__gte=iso_now, object_type='task.lead',
+                                     action='deleted')
+        logs = list(logs)
+        assert len(logs) == 1
+        assert logs[0]['object_id'] == task_id
+        assert logs[0]['action'] == 'deleted'
+
     def test_create_lead_export(self, client, random_string):
         export = client.create_lead_export(random_string)
         assert export

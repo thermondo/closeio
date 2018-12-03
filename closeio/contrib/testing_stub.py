@@ -2,11 +2,82 @@ import copy
 import itertools
 import threading
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from closeio.utils import CloseIOError, Item, parse_response
+from dateutil.parser import parse
 
 threadlocal = threading.local()
+
+
+def _get_flattened_tasks(client):
+    """Get all tasks and flatten them into a single list."""
+    return itertools.chain.from_iterable(
+        copy.deepcopy(
+            list(client._data('tasks', {}).values())
+        )
+    )
+
+
+@contextmanager
+def record_logs(stub, *args, **kwargs):
+    """Create event log data for certain operations.
+
+    This context manager can be used to automatically create
+    event logs when calling certain methods on the stub.
+    It's best to use it only for single operations and NOT call
+    multiple operations inside the context manager so that the
+    order of event logs will remain correct.
+
+    Currently only event log data for task creation and deletion
+    is supported.
+
+    Usage::
+        with record_logs(stub):
+            task = stub.create_task(lead_id='x', assigned_to='y', text='z')
+
+        with record_logs(stub):
+            stub.delete_task(task_id=task['id'])
+    """
+    old_tasks = _get_flattened_tasks(stub)
+
+    yield
+
+    current_tasks = _get_flattened_tasks(stub)
+
+    created_tasks = [task for task in current_tasks if task not in old_tasks]
+    deleted_tasks = [task for task in old_tasks if task not in current_tasks]
+
+    def _create_task_log(task):
+        return {
+            'id': 'ev_{}'.format(uuid.uuid4().hex),
+            'object_type': 'task.lead',
+            'object_id': task['id'],
+            'lead_id': task['lead_id'],
+            'user_id': task['assigned_to'],
+            'date_updated': datetime.utcnow().isoformat(),
+        }
+
+    logs = stub._data('event_logs', [])
+
+    for task in created_tasks:
+        log = _create_task_log(task)
+        log.update({
+            'action': 'created',
+            'data': task,
+            'previous_data': {},
+        })
+        logs.insert(0, log)
+
+    for task in deleted_tasks:
+        log = _create_task_log(task)
+        log.update({
+            'action': 'deleted',
+            'data': {},
+            'previous_data': task,
+        })
+        logs.insert(0, log)
 
 
 class CloseIOStub(object):
@@ -551,6 +622,35 @@ class CloseIOStub(object):
             raise CloseIOError()
 
         del opportunities[opportunity_id]
+
+    @parse_response
+    def get_event_logs(self, **kwargs):
+        logs = self._data('event_logs', [])
+
+        for param in ['action', 'object_type', 'object_id', 'lead_id', 'user_id']:
+            if param in kwargs:
+                logs = [log for log in logs if log[param] == kwargs[param]]
+
+        if 'date_updated__gt' in kwargs:
+            date_updated = parse(kwargs['date_updated__gt'])
+            logs = [log for log in logs if parse(log['date_updated']) > date_updated]
+
+        if 'date_updated__gte' in kwargs:
+            date_updated = parse(kwargs['date_updated__gte'])
+            logs = [log for log in logs if parse(log['date_updated']) >= date_updated]
+
+        if 'date_updated__lt' in kwargs:
+            date_updated = parse(kwargs['date_updated__lt'])
+            logs = [log for log in logs if parse(log['date_updated']) < date_updated]
+
+        if 'date_updated__lte' in kwargs:
+            date_updated = parse(kwargs['date_updated__lte'])
+            logs = [log for log in logs if parse(log['date_updated']) <= date_updated]
+
+        if '_limit' in kwargs:
+            logs = logs[:kwargs['_limit']]
+
+        return logs
 
     @parse_response
     def get_export(self, id):
