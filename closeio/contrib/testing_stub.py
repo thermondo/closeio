@@ -12,76 +12,9 @@ from closeio.utils import CloseIOError, Item, parse_response
 threadlocal = threading.local()
 
 
-def _get_flattened_tasks(client):
-    """Get all tasks and flatten them into a single list."""
-    return itertools.chain.from_iterable(
-        copy.deepcopy(
-            list(client._data('tasks', {}).values())
-        )
-    )
-
-
-@contextmanager
-def record_logs(stub, *args, **kwargs):
-    """Create event log data for certain operations.
-
-    This context manager can be used to automatically create
-    event logs when calling certain methods on the stub.
-    It's best to use it only for single operations and NOT call
-    multiple operations inside the context manager so that the
-    order of event logs will remain correct.
-
-    Currently only event log data for task creation and deletion
-    is supported.
-
-    Usage::
-        with record_logs(stub):
-            task = stub.create_task(lead_id='x', assigned_to='y', text='z')
-
-        with record_logs(stub):
-            stub.delete_task(task_id=task['id'])
-    """
-    old_tasks = _get_flattened_tasks(stub)
-
-    yield
-
-    current_tasks = _get_flattened_tasks(stub)
-
-    created_tasks = [task for task in current_tasks if task not in old_tasks]
-    deleted_tasks = [task for task in old_tasks if task not in current_tasks]
-
-    def _create_task_log(task):
-        return {
-            'id': 'ev_{}'.format(uuid.uuid4().hex),
-            'object_type': 'task.lead',
-            'object_id': task['id'],
-            'lead_id': task['lead_id'],
-            'user_id': task['assigned_to'],
-            'date_updated': datetime.utcnow().isoformat(),
-        }
-
-    logs = stub._data('event_logs', [])
-
-    for task in created_tasks:
-        log = _create_task_log(task)
-        log.update({
-            'action': 'created',
-            'data': task,
-            'previous_data': {},
-        })
-        logs.insert(0, log)
-
-    for task in deleted_tasks:
-        log = _create_task_log(task)
-        log.update({
-            'action': 'deleted',
-            'data': {},
-            'previous_data': task,
-        })
-        logs.insert(0, log)
-
-
 class CloseIOStub(object):
+    record_event_logs = False
+
     def __init__(self, user_emails=None):
         users = self._data('users', [])
         if user_emails:
@@ -107,6 +40,54 @@ class CloseIOStub(object):
             storage[attr] = default
 
         return storage[attr]
+
+    def _create_task_log(self, task):
+        return {
+            'id': 'ev_{}'.format(uuid.uuid4().hex),
+            'object_type': 'task.lead',
+            'object_id': task['id'],
+            'lead_id': task['lead_id'],
+            'user_id': task['assigned_to'],
+            'date_updated': datetime.utcnow().isoformat(),
+        }
+
+    def _create_task_log_created(self, task):
+        logs = self._data('event_logs', [])
+        log = self._create_task_log(task)
+        log.update({
+            'action': 'created',
+            'data': task,
+            'previous_data': {},
+        })
+        logs.insert(0, log)
+
+    def _create_task_log_deleted(self, task):
+        logs = self._data('event_logs', [])
+        log = self._create_task_log(task)
+        log.update({
+            'action': 'deleted',
+            'data': {},
+            'previous_data': task,
+        })
+        logs.insert(0, log)
+
+    @contextmanager
+    def record_logs(self):
+        """Create event log data for certain operations.
+
+        This context manager can be used to automatically create
+        event logs when calling certain methods on the stub.
+        Currently only event log data for task creation and deletion
+        is supported.
+
+        Example usage::
+            with stub.record_logs():
+                task = stub.create_task(lead_id='x', assigned_to='y', text='z')
+                stub.delete_task(task_id=task['id'])
+        """
+        self.record_event_logs = True
+        yield
+        self.record_event_logs = False
 
     @parse_response
     def find_opportunity_status(self, label):
@@ -305,6 +286,8 @@ class CloseIOStub(object):
             for t in tasks_list:
                 if t['id'] == task_id:
                     tasks[lead_id].remove(t)
+                    if self.record_event_logs:
+                        self._create_task_log_deleted(t)
                     return True
         raise CloseIOError()
 
@@ -423,6 +406,9 @@ class CloseIOStub(object):
         }
 
         tasks[lead_id].append(task)
+
+        if self.record_event_logs:
+            self._create_task_log_created(task)
 
         return task
 
