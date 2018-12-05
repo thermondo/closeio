@@ -2,7 +2,10 @@ import copy
 import itertools
 import threading
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
+
+from dateutil.parser import parse
 
 from closeio.utils import CloseIOError, Item, parse_response
 
@@ -10,6 +13,8 @@ threadlocal = threading.local()
 
 
 class CloseIOStub(object):
+    record_event_logs = False
+
     def __init__(self, user_emails=None):
         users = self._data('users', [])
         if user_emails:
@@ -35,6 +40,54 @@ class CloseIOStub(object):
             storage[attr] = default
 
         return storage[attr]
+
+    def _create_task_log(self, task):
+        return {
+            'id': 'ev_{}'.format(uuid.uuid4().hex),
+            'object_type': 'task.lead',
+            'object_id': task['id'],
+            'lead_id': task['lead_id'],
+            'user_id': task['assigned_to'],
+            'date_updated': datetime.utcnow().isoformat(),
+        }
+
+    def _create_task_log_created(self, task):
+        logs = self._data('event_logs', [])
+        log = self._create_task_log(task)
+        log.update({
+            'action': 'created',
+            'data': task,
+            'previous_data': {},
+        })
+        logs.insert(0, log)
+
+    def _create_task_log_deleted(self, task):
+        logs = self._data('event_logs', [])
+        log = self._create_task_log(task)
+        log.update({
+            'action': 'deleted',
+            'data': {},
+            'previous_data': task,
+        })
+        logs.insert(0, log)
+
+    @contextmanager
+    def record_logs(self):
+        """Create event log data for certain operations.
+
+        This context manager can be used to automatically create
+        event logs when calling certain methods on the stub.
+        Currently only event log data for task creation and deletion
+        is supported.
+
+        Example usage::
+            with stub.record_logs():
+                task = stub.create_task(lead_id='x', assigned_to='y', text='z')
+                stub.delete_task(task_id=task['id'])
+        """
+        self.record_event_logs = True
+        yield
+        self.record_event_logs = False
 
     @parse_response
     def find_opportunity_status(self, label):
@@ -233,6 +286,8 @@ class CloseIOStub(object):
             for t in tasks_list:
                 if t['id'] == task_id:
                     tasks[lead_id].remove(t)
+                    if self.record_event_logs:
+                        self._create_task_log_deleted(t)
                     return True
         raise CloseIOError()
 
@@ -351,6 +406,9 @@ class CloseIOStub(object):
         }
 
         tasks[lead_id].append(task)
+
+        if self.record_event_logs:
+            self._create_task_log_created(task)
 
         return task
 
@@ -551,6 +609,35 @@ class CloseIOStub(object):
             raise CloseIOError()
 
         del opportunities[opportunity_id]
+
+    @parse_response
+    def get_event_logs(self, **kwargs):
+        logs = self._data('event_logs', [])
+
+        for param in ['action', 'object_type', 'object_id', 'lead_id', 'user_id']:
+            if param in kwargs:
+                logs = [log for log in logs if log[param] == kwargs[param]]
+
+        if 'date_updated__gt' in kwargs:
+            date_updated = parse(kwargs['date_updated__gt'])
+            logs = [log for log in logs if parse(log['date_updated']) > date_updated]
+
+        if 'date_updated__gte' in kwargs:
+            date_updated = parse(kwargs['date_updated__gte'])
+            logs = [log for log in logs if parse(log['date_updated']) >= date_updated]
+
+        if 'date_updated__lt' in kwargs:
+            date_updated = parse(kwargs['date_updated__lt'])
+            logs = [log for log in logs if parse(log['date_updated']) < date_updated]
+
+        if 'date_updated__lte' in kwargs:
+            date_updated = parse(kwargs['date_updated__lte'])
+            logs = [log for log in logs if parse(log['date_updated']) <= date_updated]
+
+        if '_limit' in kwargs:
+            logs = logs[:kwargs['_limit']]
+
+        return logs
 
     @parse_response
     def get_export(self, id):
