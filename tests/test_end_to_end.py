@@ -82,6 +82,21 @@ class TestEndToEnd(object):
     def export(self, client, random_string):
         return client.create_lead_export(random_string)
 
+    @pytest.fixture
+    def webhook(self, client):
+        data = {
+            'url': 'https://fake.io/notes/closeio/',
+            'events': [{
+                'object_type': 'activity.note',
+                'action': 'created'
+            }]
+        }
+        new_webhook = client.create_webhook(data)
+
+        yield new_webhook
+
+        client.delete_webhook(new_webhook['id'])
+
     def test_create_lead(self, client):
         with open(os.path.join(FIXTURE_DIR, 'lead.json')) as f:
             lead = utils.parse(json.load(f))
@@ -103,7 +118,7 @@ class TestEndToEnd(object):
 
     def test_update_lead(self, client, lead):
         fields = {
-            "description": "Best show ever canceled.  Sad."
+            'description': 'Best show ever canceled.  Sad.'
         }
         response = client.update_lead(lead['id'], fields)
         assert fields['description'] == response['description']
@@ -125,7 +140,7 @@ class TestEndToEnd(object):
     @pytest.mark.flaky(reruns=3)
     def test_update_task(self, client, task):
         fields = {
-            "is_complete": True
+            'is_complete': True
         }
         response = client.update_task(task['id'], fields)
         assert response['is_complete'], dict(response)
@@ -153,7 +168,7 @@ class TestEndToEnd(object):
 
     def test_update_opportunity(self, client, opportunity):
         fields = {
-            "confidence": 75
+            'confidence': 75
         }
         response = client.update_opportunity(opportunity['id'], fields)
         assert response['confidence'] == 75, dict(response)
@@ -246,3 +261,57 @@ class TestEndToEnd(object):
 
     def test_api_key(self, client):
         assert client.api_key()
+
+    def test_get_webhooks(self, client, webhook):
+        existent_webhooks = next(client.get_webhooks())
+
+        assert existent_webhooks['id']
+        assert existent_webhooks['status']
+        assert existent_webhooks['url']
+        assert existent_webhooks['events']
+
+    def test_create_webhook(self, client):
+        data = {
+            'url': 'https://fake.io/notes/closeio/',
+            'events': [{
+                'object_type': 'activity.note',
+                'action': 'created'
+            }]
+        }
+        new_webhook = client.create_webhook(data)
+
+        assert new_webhook['id']
+        assert new_webhook['status']
+        assert new_webhook['url']
+        assert new_webhook['events']
+
+    def test_get_webhook(self, client, webhook):
+        retrieved_webhook = client.get_webhook(webhook['id'])
+
+        assert retrieved_webhook['id']
+        assert retrieved_webhook['status']
+        assert retrieved_webhook['url']
+        assert retrieved_webhook['events']
+
+    def test_update_webhook(self, client, webhook):
+        data = {'status': 'paused'}
+        updated_webhook = client.update_webhook(webhook['id'], data)
+
+        assert updated_webhook['id']
+        assert updated_webhook['status']
+        assert updated_webhook['url']
+        assert updated_webhook['events']
+
+    def test_delete_webhook(self, client):
+        data = {
+            'url': 'https://fake.io/notes/closeio/',
+            'events': [{
+                'object_type': 'activity.note',
+                'action': 'created'
+            }]
+        }
+        new_webhook = client.create_webhook(data)
+
+        deleted_webhook = client.delete_webhook(new_webhook['id'])
+
+        assert isinstance(deleted_webhook, bool)

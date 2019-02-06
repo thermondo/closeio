@@ -519,16 +519,15 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
-    def get_webhooks(self, **kwargs):
+    def get_webhooks(self):
         return paginate(
             self._api.webhook.get,
-            **kwargs
         )
 
     @parse_response
     @handle_errors
     def get_webhook(self, webhook_id):
-        return self._api.webhooks(webhook_id).get()
+        return self._api.webhook(webhook_id).get()
 
     @parse_response
     @handle_errors
@@ -545,9 +544,10 @@ class CloseIO(object):
         :param status: active or paused
         :return:
         """
-        return self._api.webhooks(webhook_id).put(status)
+        status = convert(status)
+        return self._api.webhook(webhook_id).put(status)
 
     @parse_response
     @handle_errors
     def delete_webhook(self, webhook_id):
-        return self._api.webhooks(webhook_id).delete()
+        return self._api.webhook(webhook_id).delete()
