@@ -340,6 +340,7 @@ class CloseIOStub(object):
             calls[lead_id] = []
 
         calls[lead_id].append(call)
+        return call
 
     @parse_response
     def create_activity_note(self, **kwargs):
@@ -352,6 +353,7 @@ class CloseIOStub(object):
             notes[lead_id] = []
 
         notes[lead_id].append(note)
+        return note
 
     @parse_response
     def delete_activity_email(self, activity_id):

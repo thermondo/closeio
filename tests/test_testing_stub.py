@@ -3,7 +3,7 @@ import datetime
 from closeio.contrib.testing_stub import CloseIOStub
 
 
-class TestCloseIOStub:
+class TestEventLogs:
     def test_record_and_retrieve_event_logs(self):
         client = CloseIOStub()
 
@@ -47,3 +47,47 @@ class TestCloseIOStub:
         assert len(logs) == 2
         assert logs[0]['object_id'] == task3['id']
         assert logs[1]['object_id'] == task3['id']
+
+
+class TestCreateActivities:
+    def test_create_activity_note(self):
+        client = CloseIOStub()
+
+        kwargs = {
+            'note': 'this is a test note.',
+            'lead_id': 'lead_s6vHFTK1TSRoH6otXOexWDO9jM4xyb1kELHDoU7Fdsp',
+        }
+        response = client.create_activity_note(**kwargs)
+        assert response['id'].startswith('acti_')
+
+    def test_create_activity_call(self):
+        client = CloseIOStub()
+
+        kwargs = {
+            'direction': 'outbound',
+            'status': 'completed',
+            'note': 'call notes go here',
+            'duration': 153,
+            'lead_id': 'lead_s6vHFTK1TSRoH6otXOexWDO9jM4xyb1kELHDoU7Fdsp',
+        }
+        response = client.create_activity_call(**kwargs)
+        assert response['id'].startswith('acti_')
+
+    def test_create_activity_email(self):
+        client = CloseIOStub()
+
+        kwargs = {
+            'subject': 'test subject',
+            'sender': 'sender@example.com',
+            'to': ['recipient+1@example.com'],
+            'bcc': [],
+            'cc': [],
+            'status': 'draft',
+            'body_text': 'test',
+            'body_html': 'test',
+            'attachments': [],
+            'template_id': None,
+            'lead_id': 'lead_s6vHFTK1TSRoH6otXOexWDO9jM4xyb1kELHDoU7Fdsp',
+        }
+        response = client.create_activity_email(**kwargs)
+        assert response['id'].startswith('acti_')
