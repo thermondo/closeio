@@ -536,15 +536,15 @@ class CloseIO(object):
 
     @parse_response
     @handle_errors
-    def update_webhook(self, webhook_id, status):
+    def update_webhook(self, webhook_id, data):
         """
         Update a webhook status.
 
         :param webhook_id:
-        :param status: active or paused
+        :param data (dict): { status: active or paused }
         :return:
         """
-        status = convert(status)
+        status = convert(data)
         return self._api.webhook(webhook_id).put(status)
 
     @parse_response

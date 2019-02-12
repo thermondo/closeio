@@ -85,7 +85,7 @@ class TestEndToEnd(object):
     @pytest.fixture
     def webhook(self, client):
         data = {
-            'url': 'https://fake.io/notes/closeio/',
+            'url': 'https://thermondo.de/notes/closeio/',
             'events': [{
                 'object_type': 'activity.note',
                 'action': 'created'
@@ -272,7 +272,7 @@ class TestEndToEnd(object):
 
     def test_create_webhook(self, client):
         data = {
-            'url': 'https://fake.io/notes/closeio/',
+            'url': 'https://thermondo.de/notes/closeio/',
             'events': [{
                 'object_type': 'activity.note',
                 'action': 'created'
@@ -284,6 +284,8 @@ class TestEndToEnd(object):
         assert new_webhook['status']
         assert new_webhook['url']
         assert new_webhook['events']
+
+        client.delete_webhook(new_webhook['id'])
 
     def test_get_webhook(self, client, webhook):
         retrieved_webhook = client.get_webhook(webhook['id'])
@@ -304,7 +306,7 @@ class TestEndToEnd(object):
 
     def test_delete_webhook(self, client):
         data = {
-            'url': 'https://fake.io/notes/closeio/',
+            'url': 'https://thermondo.de/notes/closeio/',
             'events': [{
                 'object_type': 'activity.note',
                 'action': 'created'

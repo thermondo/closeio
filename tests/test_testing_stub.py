@@ -1,5 +1,8 @@
 import datetime
 
+import pytest
+
+from closeio import CloseIOError
 from closeio.contrib.testing_stub import CloseIOStub
 
 
@@ -160,7 +163,7 @@ class TestWebhooksSubscription:
     def test_delete_webhook(self):
         client = CloseIOStub()
         data = {
-            'url': 'https://fake.io/notes/closeio/',
+            'url': 'https://example.com/notes/closeio/',
             'events': [{
                 'object_type': 'activity.note',
                 'action': 'created'
@@ -170,3 +173,5 @@ class TestWebhooksSubscription:
         new_webhook = client.create_webhook(data)
 
         assert client.delete_webhook(new_webhook['id']) is True
+        with pytest.raises(CloseIOError):
+            client.get_webhook(new_webhook['id'])

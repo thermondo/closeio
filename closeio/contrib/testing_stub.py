@@ -726,23 +726,16 @@ class CloseIOStub(object):
     @parse_response
     def update_webhook(self, webhook_id, status):
         webhook = self.get_webhook(webhook_id)
-        if webhook:
-            webhook['status'] = status['status']
-            return webhook
-
-        raise CloseIOError()
+        webhook['status'] = status['status']
+        return webhook
 
     @parse_response
     def delete_webhook(self, webhook_id):
         webhooks = self._data('webhooks', [])
-        found = -1
 
         for index, webhook in enumerate(webhooks):
             if webhook['id'] == webhook_id:
-                found = index
-
-        if found == -1:
+                webhooks.pop(index)
+                return True
+        else:
             raise CloseIOError()
-
-        webhooks.pop(found)
-        return True
