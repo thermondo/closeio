@@ -1,5 +1,8 @@
 import datetime
 
+import pytest
+
+from closeio import CloseIOError
 from closeio.contrib.testing_stub import CloseIOStub
 
 
@@ -91,3 +94,84 @@ class TestCreateActivities:
         }
         response = client.create_activity_email(**kwargs)
         assert response['id'].startswith('acti_')
+
+
+class TestWebhooksSubscription:
+    def test_get_webhooks(self):
+        client = CloseIOStub()
+
+        response = client.get_webhooks()
+
+        assert response == []
+
+        data = {
+            'url': 'aweso.me',
+            'events': [
+                {
+                    'object_type': 'activity.note',
+                    'action': 'created'
+                }
+            ]
+        }
+        client.create_webhook(data)
+
+        response = client.get_webhooks()
+
+        assert len(response) == 1
+        assert response[0]['id']
+        assert response[0]['status']
+        assert response[0]['url']
+        assert response[0]['events']
+
+    def test_create_webhook(self):
+        client = CloseIOStub()
+
+        data = {
+            'url': 'aweso.me',
+            'events': [
+                {
+                    'object_type': 'activity.note',
+                    'action': 'created'
+                }
+            ]
+        }
+        new_webhook = client.create_webhook(data)
+        assert new_webhook['id']
+        assert new_webhook['status']
+        assert new_webhook['url']
+        assert new_webhook['events']
+
+    def test_update_webhook(self):
+        client = CloseIOStub()
+
+        data = {
+            'url': 'aweso.me',
+            'events': [
+                {
+                    'object_type': 'activity.note',
+                    'action': 'created'
+                }
+            ]
+        }
+        new_webhook = client.create_webhook(data)
+
+        data = {'status': 'paused'}
+        updated_webhook = client.update_webhook(new_webhook['id'], data)
+
+        assert updated_webhook['status'] == data['status']
+
+    def test_delete_webhook(self):
+        client = CloseIOStub()
+        data = {
+            'url': 'https://example.com/notes/closeio/',
+            'events': [{
+                'object_type': 'activity.note',
+                'action': 'created'
+            }]
+
+        }
+        new_webhook = client.create_webhook(data)
+
+        assert client.delete_webhook(new_webhook['id']) is True
+        with pytest.raises(CloseIOError):
+            client.get_webhook(new_webhook['id'])

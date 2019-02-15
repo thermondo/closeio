@@ -689,3 +689,53 @@ class CloseIOStub(object):
                 'key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
             }],
         })
+
+    @parse_response
+    def get_webhooks(self):
+        return self._data('webhooks', [])
+
+    @parse_response
+    def get_webhook(self, webhook_id):
+        webhooks = self._data('webhooks', [])
+
+        for webhook in webhooks:
+            if webhook['id'] == webhook_id:
+                return webhook
+
+        raise CloseIOError()
+
+    @parse_response
+    def create_webhook(self, data):
+        webhooks = self._data('webhooks', [])
+
+        new_webhook = {
+            'status': 'active',
+            'updated_by': 'user_{}'.format(uuid.uuid4().hex),
+            'url': data['url'],
+            'created_by': 'user_{}'.format(uuid.uuid4().hex),
+            'signature_key': 'xxxxxx',
+            'date_created': datetime.utcnow().isoformat(),
+            'date_updated': datetime.utcnow().isoformat(),
+            'verify_ssl': True,
+            'events': data['events'],
+            'id': 'whsub_{}'.format(uuid.uuid4().hex)
+        }
+        webhooks.append(new_webhook)
+        return new_webhook
+
+    @parse_response
+    def update_webhook(self, webhook_id, status):
+        webhook = self.get_webhook(webhook_id)
+        webhook['status'] = status['status']
+        return webhook
+
+    @parse_response
+    def delete_webhook(self, webhook_id):
+        webhooks = self._data('webhooks', [])
+
+        for index, webhook in enumerate(webhooks):
+            if webhook['id'] == webhook_id:
+                webhooks.pop(index)
+                return True
+        else:
+            raise CloseIOError()

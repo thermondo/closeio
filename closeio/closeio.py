@@ -516,3 +516,38 @@ class CloseIO(object):
             self._api.event.get,
             **kwargs
         )
+
+    @parse_response
+    @handle_errors
+    def get_webhooks(self):
+        return paginate(
+            self._api.webhook.get,
+        )
+
+    @parse_response
+    @handle_errors
+    def get_webhook(self, webhook_id):
+        return self._api.webhook(webhook_id).get()
+
+    @parse_response
+    @handle_errors
+    def create_webhook(self, data):
+        return self._api.webhook.post(data)
+
+    @parse_response
+    @handle_errors
+    def update_webhook(self, webhook_id, data):
+        """
+        Update a webhook status.
+
+        :param webhook_id:
+        :param data (dict): { status: active or paused }
+        :return:
+        """
+        status = convert(data)
+        return self._api.webhook(webhook_id).put(status)
+
+    @parse_response
+    @handle_errors
+    def delete_webhook(self, webhook_id):
+        return self._api.webhook(webhook_id).delete()
