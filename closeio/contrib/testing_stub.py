@@ -347,6 +347,8 @@ class CloseIOStub(object):
         notes = self._data('activity_notes', {})
         note = kwargs
         note['id'] = 'acti_{}'.format(uuid.uuid4().hex)
+        note['created_by'] = 'user_04EJPREurd0b3KDozVFqXSRbt2uBjw3QfeYa7ZaGTwI'
+        note['date_created'] = datetime.now(timezone.utc)
         lead_id = note['lead_id']
 
         if lead_id not in notes:
