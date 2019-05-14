@@ -4,6 +4,7 @@ import json
 import logging
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 logger = logging.getLogger(__name__)
 
@@ -39,17 +40,18 @@ def webhook_signature_valid(request):
     try:
         signature_keys = json.loads(settings.CLOSEIO_WEBHOOK_SIGNATURE_KEYS)
     except AttributeError:
-        logger.warning('CLOSEIO_WEBHOOK_SIGNATURE_KEYS setting not set.')
-        return False
+        raise ImproperlyConfigured('CLOSEIO_WEBHOOK_SIGNATURE_KEYS setting not set.')
     except TypeError:
-        logger.warning('Cannot parse value of CLOSEIO_WEBHOOK_SIGNATURE_KEYS to json.')
-        return False
+        raise ImproperlyConfigured('Cannot load value of CLOSEIO_WEBHOOK_SIGNATURE_KEYS to json.')
 
     try:
         signature_key = signature_keys[subscription_id]
+    except TypeError:
+        raise ImproperlyConfigured('Parsed value of CLOSEIO_WEBHOOK_SIGNATURE_KEYS is expected '
+                                   'to be a dictionary.')
     except KeyError:
-        logger.warning('No signature key set for Closeio webhook subscription with id %s.',
-                       subscription_id)
+        logger.error('No signature key set for Closeio webhook subscription with id %s.',
+                     subscription_id)
         return False
 
     close_sig_hash = request.META.get('HTTP_CLOSE_SIG_HASH')
@@ -59,11 +61,15 @@ def webhook_signature_valid(request):
         return False
 
     data = close_sig_timestamp + request.body.decode('utf-8')
-    signature = hmac.new(
-        bytearray.fromhex(signature_key),
-        data.encode('utf-8'),
-        hashlib.sha256
-    ).hexdigest()
+    try:
+        signature = hmac.new(
+            bytearray.fromhex(signature_key),
+            data.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+    except (TypeError, ValueError):
+        raise ImproperlyConfigured('The signature key for a Closeio webhook subscription must '
+                                   'be a valid string from a hexadecimal number.')
     valid = hmac.compare_digest(close_sig_hash, signature)
 
     return valid
