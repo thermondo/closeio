@@ -90,3 +90,9 @@ class TestCloseioWebhookPermission:
         headers['HTTP_CLOSE_SIG_TIMESTAMP'] = '1234567890'
         request = rf.post('/some/webhook/view', payload, **headers)
         assert webhook_signature_valid(request) is False
+
+    def test_invalid_because_of_invalid_json(self, rf, webhook_settings, headers):
+        """Should fail if the request body is not valid JSON."""
+        payload = b''
+        request = rf.post('/some/webhook/view', payload, **headers)
+        assert webhook_signature_valid(request) is False
