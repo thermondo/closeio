@@ -32,7 +32,10 @@ def webhook_signature_valid(request):
     Args:
         request: an instance of Django's ``HttpRequest`` object
     """
-    payload = json.loads(request.body)
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return False
     subscription_id = payload.get('subscription_id')
     if not subscription_id:
         return False
