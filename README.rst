@@ -3,7 +3,9 @@
 closeio
 =======
 
-Slim API wrapper to access close.io CRM
+Slim API wrapper to access close.io CRM.
+
+**This project is inactive since we are not using close.io any more. Don't hesitate to message us if you want to take over**
 
 .. |version| image:: https://img.shields.io/pypi/v/faster_closeio.svg
    :target: https://pypi.python.org/pypi/faster_closeio/
